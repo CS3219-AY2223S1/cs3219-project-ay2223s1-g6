@@ -16,41 +16,47 @@ import {STATUS_CODE_CONFLICT, STATUS_CODE_CREATED} from "../constants";
 import {Link} from "react-router-dom";
 
 function SignupPage() {
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [dialogTitle, setDialogTitle] = useState("")
-    const [dialogMsg, setDialogMsg] = useState("")
-    const [isSignupSuccess, setIsSignupSuccess] = useState(false)
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogTitle, setDialogTitle] = useState("");
+    const [dialogMsg, setDialogMsg] = useState("");
+    const [isSignupSuccess, setIsSignupSuccess] = useState(false);
 
     const handleSignup = async () => {
-        setIsSignupSuccess(false)
+        setIsSignupSuccess(false);
         const res = await axios.post(URL_USER_SVC, { username, password })
             .catch((err) => {
                 if (err.response.status === STATUS_CODE_CONFLICT) {
-                    setErrorDialog('This username already exists')
+                    setErrorDialog('This username already exists');
                 } else {
-                    setErrorDialog('Please try again later')
+                    setErrorDialog('Please try again later');
                 }
             })
         if (res && res.status === STATUS_CODE_CREATED) {
-            setSuccessDialog('Account successfully created')
-            setIsSignupSuccess(true)
+            setSuccessDialog('Account successfully created');
+            setIsSignupSuccess(true);
         }
     }
 
-    const closeDialog = () => setIsDialogOpen(false)
+    // stub
+    /*const handleSignup = async () => {
+        setSuccessDialog('Account successfully created');
+        setIsSignupSuccess(true);
+    }*/
+
+    const closeDialog = () => setIsDialogOpen(false);
 
     const setSuccessDialog = (msg) => {
-        setIsDialogOpen(true)
-        setDialogTitle('Success')
-        setDialogMsg(msg)
+        setIsDialogOpen(true);
+        setDialogTitle('Success');
+        setDialogMsg(msg);
     }
 
     const setErrorDialog = (msg) => {
-        setIsDialogOpen(true)
-        setDialogTitle('Error')
-        setDialogMsg(msg)
+        setIsDialogOpen(true);
+        setDialogTitle('Error');
+        setDialogMsg(msg);
     }
 
     return (
