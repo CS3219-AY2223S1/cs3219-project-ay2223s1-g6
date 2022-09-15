@@ -6,3 +6,4 @@ node_modules/
 
 # PeerPrep
 .env
+/matching-service/dev.sqlite
