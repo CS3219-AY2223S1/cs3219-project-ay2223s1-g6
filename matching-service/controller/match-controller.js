@@ -1,10 +1,10 @@
-import { ormCreateNewMatch as _createPendingMatch } from '../model/match-orm.js';
+import { ormFindMatch as _findMatch } from '../model/match-orm.js';
 
-export async function createPendingMatch(req, res) {
+export async function findMatch(req, res) {
   try {
     const { userId, username, difficultyLevel } = req.body;
     if (userId && username && difficultyLevel) {
-      const resp = await _createPendingMatch(userId, username, difficultyLevel);
+      const resp = await _findMatch(userId, username, difficultyLevel);
       console.log(resp);
       if (resp.err) {
         return res.status(400).json({ message: 'Could not create a new pending match!' });

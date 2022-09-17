@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import { createPendingMatch } from './controller/match-controller.js';
+import { findMatch } from './controller/match-controller.js';
 import { db } from './model/database.js';
 
 const app = express();
@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors()); // config cors so that front-end can use
 app.options('*', cors()); // TODO: what's this?
 
-app.post('/api/match', createPendingMatch);
+app.post('/api/match', findMatch);
 
 // TODO: add try-catch blocks
 
