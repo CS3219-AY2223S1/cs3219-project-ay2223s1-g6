@@ -40,13 +40,13 @@ export async function findPendingMatch(params) {
     var waitTill = new Date(new Date().getTime() + 10 * 1000);
     var noMatched = true;
     while(waitTill > new Date()) {
-      // io.on("getMatched", (arg, callback) => {
-      //   console.log(arg); // "world"
-      //   if (arg == params.difficultyLevel.toString()) {
-      //     noMatched = false;
-      //     callback("matched successfully");
-      //   }
-      // });
+      io.on("getMatched", (arg, callback) => {
+        console.log(arg);
+        if (arg == params.difficultyLevel.toString()) {
+          noMatched = false;
+          callback("matched successfully");
+        }
+      });
       console.log("i am waiting")
     }
     await deletePendingMatch(params.userId, params.difficultyLevel);
@@ -56,9 +56,9 @@ export async function findPendingMatch(params) {
       return "found match";
     }
   } else {
-    // io.emit("getMatched", params.difficultyLevel.toString() , (response) => {
-    //   console.log(response); // "got it"
-    // });
+    io.emit("getMatched", params.difficultyLevel.toString() , (response) => {
+      console.log(response);
+    });
     await deletePendingMatch(result.userId, result.difficultyLevel)
     return "found match";
   }
