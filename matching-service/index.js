@@ -3,6 +3,8 @@ import cors from 'cors';
 import 'dotenv/config';
 import { findMatch } from './controller/match-controller.js';
 import { db } from './model/database.js';
+import { Server } from "socket.io";
+import { createServer } from 'http';
 
 const app = express();
 const port = process.env.PORT || 8001;
@@ -23,6 +25,18 @@ await db.sync().then(() => {
   console.log(error);
 });
 
-const server = app.listen(port, () => {
+// const server = app.listen(port, () => {
+//   console.log('Matching service server started on port ' + port);
+// }); // TODO: socketio.listen(server) or else
+
+const httpServer = createServer(app);
+
+
+const io = new Server(httpServer);
+
+
+httpServer.listen(port, () => {
   console.log('Matching service server started on port ' + port);
-}); // TODO: socketio.listen(server) or else
+});
+
+export default {io, httpServer}

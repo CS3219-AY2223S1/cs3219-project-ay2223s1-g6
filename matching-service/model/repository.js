@@ -1,4 +1,5 @@
 import PendingMatch from './match-model.js';
+import io from '../index.js'
 
 export async function createPendingMatch(params) {
   if (params.difficultyLevel.toString() == "easy") {
@@ -36,23 +37,31 @@ export async function findPendingMatch(params) {
   if (result == null) {
     console.log("no match at current moment, waiting for incoming match");
     await createPendingMatch(params);
-    var waitTill = new Date(new Date().getTime() + 3 * 1000);
+    var waitTill = new Date(new Date().getTime() + 10 * 1000);
     var noMatched = true;
-    while(waitTill > new Date()){
+    while(waitTill > new Date()) {
+      // io.on("getMatched", (arg, callback) => {
+      //   console.log(arg); // "world"
+      //   if (arg == params.difficultyLevel.toString()) {
+      //     noMatched = false;
+      //     callback("matched successfully");
+      //   }
+      // });
       console.log("i am waiting")
     }
-
+    await deletePendingMatch(params.userId, params.difficultyLevel);
     if (noMatched) {
       return "no match at current moment, waiting for incoming match";
     } else {
-      await deletePendingMatch(params.userId, params.difficultyLevel);
       return "found match";
     }
   } else {
+    // io.emit("getMatched", params.difficultyLevel.toString() , (response) => {
+    //   console.log(response); // "got it"
+    // });
     await deletePendingMatch(result.userId, result.difficultyLevel)
     return "found match";
   }
-
 }
 
 // export default {findMatch};
