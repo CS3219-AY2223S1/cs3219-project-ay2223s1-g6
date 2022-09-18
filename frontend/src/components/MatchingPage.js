@@ -12,7 +12,7 @@ import {useState} from "react";
 import axios from "axios";
 import {URL_USER_SVC, URL_MATCH_SVC} from "../configs";
 import {
-    STATUS_CODE_LOGOUT, STATUS_CODE_DELACC, STATUS_CODE_CHANGEPW, 
+    STATUS_CODE_LOGOUT, STATUS_CODE_DELACC, STATUS_CODE_CHANGEPW, STATUS_CODE_MATCH, 
     DIALOG_TO_SIGNUP, DIALOG_TO_LOGIN, DIALOG_TO_MATCH, DIALOG_TO_ROOM
 } from "../constants";
 import {Link} from "react-router-dom";
@@ -55,7 +55,7 @@ function MatchingPage() {
     }
 
     const handleChangePw = async () => {
-        setPassword("dummyNewPassword");
+        setPassword('dummyNewPassword');
         const res = await axios.post(URL_USER_SVC, { username, password }) //cookie
             .catch((err) => {
                 setDialogMsg('Unsuccessful');
@@ -75,7 +75,7 @@ function MatchingPage() {
                 setDialogMsg('Unsuccessful');
                 setDialogButton(DIALOG_TO_MATCH);
             })
-        if (res && res.status === STATUS_CODE_CHANGEPW) {
+        if (res && res.status === STATUS_CODE_MATCH) {
             setDialogMsg('Successful');
             setDialogButton(DIALOG_TO_ROOM);
         }
