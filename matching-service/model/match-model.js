@@ -1,77 +1,51 @@
 import { db } from './database.js';
 import { Sequelize } from 'sequelize';
 
-const easyLevel = db.define('Easy', {
-        // id: {
-        //   filed: 'userid',
-        //   type: Sequel.INTEGER,
-        //   primaryKey: true,
-        // },
-        // startTime: {
-        //   filed: 'starTime',
-        //   type: Sequel.TIME,
-        //   defaultValue: new Date(),
-        // },
-        // difficultyLevel: {
-        //   filed: 'difficultyLevel',
-        //   type: Sequel.STRING,
-        // },
+export const EasyPendingMatch = db.define('EasyPendingMatch', {
+    // TODO: need to store socket id
     userId: {
-        type: Sequelize.STRING,
-        allowNull: false, // TODO: needed?
-        primaryKey: true,
+      type: Sequelize.STRING,
+      primaryKey: true,
     },
-        username: {
-            type: Sequelize.STRING,
-            allowNull: false, // TODO: needed?
-        },
-        difficultyLevel: {
-            type: Sequelize.STRING,
-            allowNull: false,
-        },
-    }, {
-        freezeTableName: true,
-    },
-);
-
-const mediumLevel =  db.define('Medium', {
-    userId: {
-        type: Sequelize.STRING,
-        allowNull: false, // TODO: needed?
-        primaryKey: true,
-    },
-
     username: {
-            type: Sequelize.STRING,
-            allowNull: false, // TODO: needed?
-        },
-        difficultyLevel: {
-            type: Sequelize.STRING,
-            allowNull: false,
-        },
-    }, {
-        freezeTableName: true,
-    }
-);
-
-const hardLevel =  db.define('Hard', {
-    userId: {
-        type: Sequelize.STRING,
-        allowNull: false, // TODO: needed?
-        primaryKey: true,
+      type: Sequelize.STRING,
+      allowNull: false,
     },
-
-    username: {
-            type: Sequelize.STRING,
-            allowNull: false, // TODO: needed?
-        },
-        difficultyLevel: {
-            type: Sequelize.STRING,
-            allowNull: false,
-        },
-    }, {
-        freezeTableName: true,
-    }
+    roomId: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  },
 );
 
-export default {easyLevel, mediumLevel, hardLevel};
+export const MediumPendingMatch = db.define('MediumPendingMatch', {
+    userId: {
+      type: Sequelize.STRING,
+      primaryKey: true,
+    },
+    username: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    roomId: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  },
+);
+
+export const HardPendingMatch = db.define('HardPendingMatch', {
+    userId: {
+      type: Sequelize.STRING,
+      primaryKey: true,
+    },
+    username: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    roomId: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  },
+);

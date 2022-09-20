@@ -1,21 +1,19 @@
-import { ormFindMatch as _findMatch } from '../model/match-orm.js';
+import { newMatch as _newMatch } from '../model/service.js';
 
-export async function findMatch(req, res) {
+export async function handleNewMatch(data, socket) {
   try {
-    const { userId, username, difficultyLevel } = req.body;
+    const { userId, username, difficultyLevel } = data;
     if (userId && username && difficultyLevel) {
-      const resp = await _findMatch(userId, username, difficultyLevel);
-      console.log(resp);
-      if (resp.err) {
-        return res.status(400).json({ message: 'Could not create a new pending match!' });
-      } else {
-        console.log(`Pending match created for user ${username}`);
-        return res.status(200).json({ message: `Pending match created for user ${username}` });
-      }
+      await _newMatch(userId, username, difficultyLevel, socket);
     } else {
-      return res.status(400).json({ message: 'UserId or Username and/or DifficultyLevel are missing!' });
+      socket.emit('match failure', { message: 'Missing userId and/or username and/or difficultyLevel' });
     }
   } catch (err) {
-    return res.status(500).json({ message: 'Failure when creating new pending match!' });
+    console.log(err);
+    socket.emit('match failure', { message: 'Could not create a new pending match' });
   }
 }
+
+// TODO: handle leave room
+
+// TODO: handle disconnection
