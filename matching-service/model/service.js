@@ -21,7 +21,7 @@ export async function newMatch(userId, username, difficultyLevel, socket) {
       const numUsersDeleted = await deletePendingMatch(userId, difficultyLevel);
       if (numUsersDeleted === 1) {
         socket.leave(roomId);
-        socket.emit('match failure', 'no match could be found');
+        socket.emit('match failure', 'no match could be found after waiting for 30 seconds');
         console.log('finish waiting for 30 seconds and no match found');
       }
     }, 30 * 1000);
