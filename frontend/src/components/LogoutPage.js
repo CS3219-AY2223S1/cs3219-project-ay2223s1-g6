@@ -21,7 +21,7 @@ function LogoutPage(props) {
     const [dialogMsg, setDialogMsg] = useState("");
     const [isSuccessful, setIsSuccessful] = useState(false);
 
-    /*const handleLogout = async () => {
+    const handleLogout = async () => {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC, { username })
             .catch((err) => {
@@ -33,15 +33,16 @@ function LogoutPage(props) {
             setUsername('');
         }
         setIsDialogOpen(true);
-    }*/
+    }
 
-    const handleLogout = () => {
+    // stub
+    /*const handleLogout = () => {
         setDialogMsg('Successful');
         setIsSuccessful(true);
         setUsername('');
         console.log('username is empty');
         setIsDialogOpen(true);
-    }
+    }*/
 
     const closeDialog = () => setIsDialogOpen(false);
 

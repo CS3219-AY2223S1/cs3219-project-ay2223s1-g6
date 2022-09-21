@@ -10,10 +10,8 @@ import {
 } from "@mui/material";
 import {useState} from "react";
 import axios from "axios";
-import {URL_USER_SVC, URL_MATCH_SVC} from "../configs";
-import {
-    STATUS_CODE_LOGOUT, STATUS_CODE_DELACC, STATUS_CODE_CHANGEPW, STATUS_CODE_MATCH
-} from "../constants";
+import {URL_MATCH_SVC} from "../configs";
+import {STATUS_CODE_MATCH} from "../constants";
 import {Link} from "react-router-dom";
 
 function MatchingPage(props) {
@@ -25,7 +23,7 @@ function MatchingPage(props) {
     const [difficulty, setDifficulty] = useState(0);
     const [isSuccessful, setIsSuccessful] = useState(false);
 
-    /*const handleMatch = async () => {
+    const handleMatch = async () => {
         setIsSuccessful(false);
         const res = await axios.post(URL_MATCH_SVC, { difficulty, username })
             .catch((err) => {
@@ -36,14 +34,14 @@ function MatchingPage(props) {
             setIsSuccessful(true);
         }
         setIsDialogOpen(true);
-    }*/
+    }
 
     // stub
-    const handleMatch = () => {
+    /*const handleMatch = () => {
         setDialogMsg('Successful');
         setIsSuccessful(true);
         setIsDialogOpen(true);
-    }
+    }*/
     
     const handleEasyMatch = () => {
         setDifficulty(1);

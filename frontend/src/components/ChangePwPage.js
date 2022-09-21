@@ -15,7 +15,7 @@ import {URL_USER_SVC} from "../configs";
 import {STATUS_CODE_CHANGEPW} from "../constants";
 import {Link} from "react-router-dom";
 
-function UpdateAccPage(props) {
+function ChangePwPage(props) {
     const username = props.username;
     const setUsername = props.setUsername;
 
@@ -24,7 +24,7 @@ function UpdateAccPage(props) {
     const [dialogMsg, setDialogMsg] = useState('');
     const [isSuccessful, setIsSuccessful] = useState(false);
 
-    /*const handleChangePw = async () => {
+    const handleChangePw = async () => {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC, { username, password })
             .catch((err) => {
@@ -36,16 +36,16 @@ function UpdateAccPage(props) {
             setUsername('');
         }
         setIsDialogOpen(true);
-    }*/
+    }
 
     // stub
-    const handleChangePw = () => {
+    /*const handleChangePw = () => {
         setDialogMsg('Successful');
         setIsSuccessful(true);
         setUsername('');
         console.log('username is empty');
         setIsDialogOpen(true);
-    }
+    }*/
 
     const closeDialog = () => setIsDialogOpen(false);
 
@@ -83,4 +83,4 @@ function UpdateAccPage(props) {
     )
 }
 
-export default UpdateAccPage;
+export default ChangePwPage;

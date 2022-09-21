@@ -21,7 +21,7 @@ function DeleteAccPage(props) {
     const [dialogMsg, setDialogMsg] = useState("");
     const [isSuccessful, setIsSuccessful] = useState(false);
 
-    /*const handleDelAcc = async () => {
+    const handleDelAcc = async () => {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC, { username }) //cookie
             .catch((err) => {
@@ -33,16 +33,16 @@ function DeleteAccPage(props) {
             setUsername('');
         }
         setIsDialogOpen(true);
-    }*/
+    }
 
     // stub
-    const handleDelAcc = () => {
+    /*const handleDelAcc = () => {
         setDialogMsg('Successful');
         setIsSuccessful(true);
         setUsername('');
         console.log('username is empty');
         setIsDialogOpen(true);
-    }
+    }*/
 
     const closeDialog = () => setIsDialogOpen(false);
 
@@ -60,7 +60,7 @@ function DeleteAccPage(props) {
                 </DialogContent>
                 <DialogActions>
                     {isSuccessful
-                        ? <Button component={Link} to="/signup">Home</Button>
+                        ? <Button component={Link} to="/newacc">Home</Button>
                         : <Button onClick={closeDialog}>Done</Button>
                     }
                 </DialogActions>

@@ -23,7 +23,7 @@ function LoginPage(props) {
     const [dialogMsg, setDialogMsg] = useState('');
     const [isSuccessful, setIsSuccessful] = useState(false);
 
-    /*const handleLogin = async () => {
+    const handleLogin = async () => {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC, { tempUsername, password })
             .catch((err) => {
@@ -36,16 +36,16 @@ function LoginPage(props) {
             //document.cookie = res.data.jwt;
         }
         setIsDialogOpen(true);
-    }*/
+    }
 
     // stub
-    const handleLogin = () => {
+    /*const handleLogin = () => {
         setDialogMsg('Successful');
         setIsSuccessful(true);
         setUsername(tempUsername);
         console.log('username is '+ tempUsername);
         setIsDialogOpen(true);
-    }
+    }*/
 
     const closeDialog = () => setIsDialogOpen(false);
 
