@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import db from './model/repository.js';
+import { db } from './model/database.js';
+import { Server } from 'socket.io';
 
-// const db = import('./model/repository.js');
+import { createServer } from 'http';
+import { handleNewMatch } from './controller/match-controller.js';
 
 const app = express();
 const port = process.env.PORT || 8001;
@@ -13,20 +15,31 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors()); // config cors so that front-end can use
 app.options('*', cors()); // TODO: what's this?
 
-app.get('/api/matching', (req, res) => {
-  res.status(200).send('Hello World from matching-service');
+await db.sync().then(() => {
+  console.log('Connected to DB');
+}).catch((error) => {
+  console.log('Failed to connect to DB');
+  console.log(error);
 });
 
-try {
-  db.connection();
-} catch (error) {
-  console.log(error);
-}
+const server = createServer(app);
+const io = new Server(server);  // TODO: export does not seem to be the best practice
 
-console.log('Calling app.listen()');
+io.of('/api/match')
+  .on('connection', (socket) => {
+    console.log('a user connected, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
-const server = app.listen(port, () => {
+    socket.on('new match', (data) => {
+      handleNewMatch(data, socket);
+    });
+
+    // TODO: handle leave room
+
+    // TODO: handle disconnection
+  });
+
+server.listen(port, () => {
   console.log('Matching service server started on port ' + port);
-}); // TODO: socketio.listen(server)
+});
 
-console.log('app.listen() executed');
+export default io;

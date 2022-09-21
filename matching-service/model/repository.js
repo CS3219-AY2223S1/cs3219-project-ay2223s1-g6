@@ -1,14 +1,34 @@
-import { Sequelize } from 'sequelize';
+import { EasyPendingMatch, HardPendingMatch, MediumPendingMatch } from './match-model.js';
 
-const sequelize = new Sequelize('test-db', 'user', 'password', {
-  dialect: 'sqlite',
-  host: './dev.sqlite', // data are stored in the file
-});
+export async function createPendingMatch(userId, username, difficultyLevel, roomId) {
+  switch (difficultyLevel) {
+    case 'easy':
+      return EasyPendingMatch.create({ userId, username, roomId });
+    case 'medium':
+      return MediumPendingMatch.create({ userId, username, roomId });
+    case 'hard':
+      return HardPendingMatch.create({ userId, username, roomId });
+  }
+}
 
-const connection = async () => {
-  sequelize.sync().then(() => {
-    console.log('Connected to DB');
-  });
-};
+export async function deletePendingMatch(userId, difficultyLevel) {
+  switch (difficultyLevel) {
+    case 'easy':
+      return EasyPendingMatch.destroy({ where: { userId } });
+    case 'medium':
+      return MediumPendingMatch.destroy({ where: { userId } });
+    case 'hard':
+      return HardPendingMatch.destroy({ where: { userId } });
+  }
+}
 
-export default { connection };
+export async function findSameLevelPendingMatch(difficultyLevel) {
+  switch (difficultyLevel) {
+    case 'easy':
+      return EasyPendingMatch.findOne();
+    case 'medium':
+      return MediumPendingMatch.findOne();
+    case 'hard':
+      return HardPendingMatch.findOne();
+  }
+}
