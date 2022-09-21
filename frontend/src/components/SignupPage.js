@@ -23,7 +23,7 @@ function SignupPage() {
     const [dialogMsg, setDialogMsg] = useState("");
     const [isSignupSuccess, setIsSignupSuccess] = useState(false);
 
-    const handleSignup = async () => {
+    /*const handleSignup = async () => {
         setIsSignupSuccess(false);
         const res = await axios.post(URL_USER_SVC, { username, password })
             .catch((err) => {
@@ -37,13 +37,13 @@ function SignupPage() {
             setSuccessDialog('Account successfully created');
             setIsSignupSuccess(true);
         }
-    }
+    }*/
 
     // stub
-    /*const handleSignup = async () => {
+    const handleSignup = async () => {
         setSuccessDialog('Account successfully created');
         setIsSignupSuccess(true);
-    }*/
+    }
 
     const closeDialog = () => setIsDialogOpen(false);
 
