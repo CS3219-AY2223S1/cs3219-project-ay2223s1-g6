@@ -23,8 +23,12 @@ await db.sync().then(() => {
 });
 
 const server = createServer(app);
-// TODO: Add CORS
-const io = new Server(server);  // TODO: export does not seem to be the best practice
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',  // TODO: reference config file
+    methods: ['GET', 'POST'],
+  },
+});
 
 io.of('/api/match')
   .on('connection', (socket) => {
@@ -40,7 +44,6 @@ io.of('/api/match')
       handleEnterRoom(data, socket);
     });
 
-    // TODO: handle leave room
     socket.on('leave room', (data) => {
       // emitted when user clicks a button to end the session
       handleLeaveRoom(data, socket);
@@ -57,4 +60,4 @@ server.listen(port, () => {
   console.log('Matching service server started on port ' + port);
 });
 
-export default io;
+export default io;  // TODO: export does not seem to be the best practice
