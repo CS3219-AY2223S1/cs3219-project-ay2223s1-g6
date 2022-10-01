@@ -15,6 +15,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors()); // config cors so that front-end can use
 app.options('*', cors()); // TODO: what's this?
 
+// TODO: Add GET endpoint for room /api/match/room return roomId (and difficultyLevel)
+
 await db.sync().then(() => {
   console.log('Connected to DB');
 }).catch((error) => {

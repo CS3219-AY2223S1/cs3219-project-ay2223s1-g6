@@ -53,6 +53,7 @@ export async function enterRoom(username, socket) {
   const room = await getRoomByUsername(username);
   if (room) {
     socket.join(room.roomId);
+    socket.emit('in room', { roomId: room.roomId, difficultyLevel: room.difficultyLevel });
   } else {
     throw new Error(`No room for user ${username} to enter. Ensure 'match success' is received before 'enter room'.`);
   }
