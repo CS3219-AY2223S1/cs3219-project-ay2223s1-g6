@@ -4,6 +4,7 @@ import {
     changePassword as _changePassword,
     login as _userLogin,
     logout as _userLogout,
+    authenticate as _authenticate
 } from '../service/user-service.js'
 
 export async function createUser(req, res) {
@@ -124,3 +125,33 @@ export async function userLogout(req, res) {
         return res.status(500).json({ message: `Database error, Failed to logout!` });
     }
 }
+
+export async function userAuthentication(req, res) {
+    try {
+        const username = req.body.username;
+        if (username) {
+            const token = req.cookies.auth
+            console.log('Received token:', token)
+            const resp = await _authenticate(username, token);
+            if (resp) {
+                console.log(`User ${username} successfully authenticated!`);
+                return res.status(201).json({ 
+                    message: `User ${username} successfully authenticated!`,
+                    status: resp
+                });
+            } else {
+                return res.status(400).json({ 
+                    message: `Failed to authenticate user: ${username}!`,
+                    status: resp
+                });
+            }
+        } else {
+            console.log('Username missing.');
+            return;
+        }
+
+    } catch (err) {
+        return res.status(500).json({ message: `Server error, Failed to authenticate!` });
+    }
+}
+

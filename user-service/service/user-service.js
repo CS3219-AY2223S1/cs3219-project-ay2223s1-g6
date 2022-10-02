@@ -72,3 +72,7 @@ export async function logout(username, token) {
         return {OK:false, message:'Token delete failed.'}
     }
 }
+
+export async function authenticate(username, token) {
+    return await validateToken(username, token)
+}

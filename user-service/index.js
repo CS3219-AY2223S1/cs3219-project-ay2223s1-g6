@@ -18,6 +18,7 @@ import {
     deleteUser, 
     userLogin,
     userLogout,
+    userAuthentication,
 } from './controller/user-controller.js';
 
 const router = express.Router()
@@ -29,6 +30,8 @@ router.post('/logout', userLogout)
 router.post('/newacc', createUser)
 router.post('/deleteacc', deleteUser)
 router.post('/updateacc', changePassword)
+
+router.post('/authenticate', userAuthentication)
 
 
 app.use('/api/user', router).all((_, res) => {
