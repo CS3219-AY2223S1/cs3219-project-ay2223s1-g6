@@ -23,7 +23,7 @@ await db.sync().then(() => {
 });
 
 const server = createServer(app);
-const io = new Server(server);  // TODO: export does not seem to be the best practice
+const io = new Server(server, { cors: { origin: "*"} });  // TODO: export does not seem to be the best practice
 
 io.of('/api/match')
   .on('connection', (socket) => {

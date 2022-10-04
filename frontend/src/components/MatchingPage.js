@@ -9,39 +9,37 @@ import {
     Typography
 } from "@mui/material";
 import {useState} from "react";
-import axios from "axios";
+import { io } from "socket.io-client";
 import {URL_MATCH_SVC} from "../configs";
 import {STATUS_CODE_MATCH} from "../constants";
 import {Link} from "react-router-dom";
 
 function MatchingPage(props) {
     const username = props.username;
-    console.log('username is ' + username);
+    //console.log('username is ' + username);
+    //console.log('cookie: ' + document.cookie);
+
+    const socket = io(URL_MATCH_SVC);
+    socket.on('match success', () => {
+        setDialogMsg('Successful');
+        setIsSuccessful(true);
+        setIsDialogOpen(true);
+    });
+    socket.on('match failure', (msg) => {
+        setDialogMsg('March is unsuccessful, you could try again or try another level.');
+        setIsSuccessful(false);
+        setIsDialogOpen(true);
+    });
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState("");
     const [difficulty, setDifficulty] = useState(0);
     const [isSuccessful, setIsSuccessful] = useState(false);
 
-    const handleMatch = async () => {
+    const handleMatch = () => {
         setIsSuccessful(false);
-        const res = await axios.post(URL_MATCH_SVC, { difficulty, username })
-            .catch((err) => {
-                setDialogMsg('Unsuccessful');
-            })
-        if (res && res.status === STATUS_CODE_MATCH) {
-            setDialogMsg('Successful');
-            setIsSuccessful(true);
-        }
-        setIsDialogOpen(true);
+        socket.emit("new match", { userId: document.cookie, username: username, difficultyLevel: difficulty });
     }
-
-    // stub
-    /*const handleMatch = () => {
-        setDialogMsg('Successful');
-        setIsSuccessful(true);
-        setIsDialogOpen(true);
-    }*/
     
     const handleEasyMatch = () => {
         setDifficulty(1);
