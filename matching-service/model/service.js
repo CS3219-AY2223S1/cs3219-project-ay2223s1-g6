@@ -42,7 +42,8 @@ export async function newMatch(username, difficultyLevel, socket) {
     await createRoom(username, pendingMatch.roomId, difficultyLevel);
     // TODO: Anything to return for success?
     // console.log(socket.rooms);
-    io.of('/api/match').in(pendingMatch.roomId).emit('match success');
+    // TODO: call question service to generate a questionId
+    io.of('/api/match').in(pendingMatch.roomId).emit('match success', { questionId: 1 });
     console.log('found a match instantly!');
     console.log(`user ${username} and ${pendingMatch.username} are in room: ${pendingMatch.roomId}`);
   }
