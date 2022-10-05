@@ -26,7 +26,7 @@ function MatchingPage(props) {
         setIsDialogOpen(true);
     });
     socket.on('match failure', (msg) => {
-        setDialogMsg('March is unsuccessful, you could try again or try another level.');
+        setDialogMsg(msg);
         setIsSuccessful(false);
         setIsDialogOpen(true);
     });
@@ -38,7 +38,7 @@ function MatchingPage(props) {
 
     const handleMatch = () => {
         setIsSuccessful(false);
-        socket.emit("new match", { userId: document.cookie, username: username, difficultyLevel: difficulty });
+        socket.emit("new match", { username: username, difficultyLevel: difficulty });
     }
     
     const handleEasyMatch = () => {
