@@ -41,7 +41,7 @@ exports.view = function (req, res, next) {
     });
 };
 
-// Handle view question info
+// Handle get random question number
 exports.getRandomQuestionNo = function (req, res, next) {
     var inputDifficultyLevel = req.params.difficultyLevel ? req.params.difficultyLevel : req.body.difficulty
     Questions.find({difficulty: inputDifficultyLevel}, function(err, question) {
