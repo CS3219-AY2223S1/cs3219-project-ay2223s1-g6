@@ -20,7 +20,7 @@ let apiRoutes = require("./question_routers/questions_api");
 
 // Connect to Mongoose and set connection variable
 console.log(process.env.MONGODB_URI)
-mongoose.connect('mongodb://localhost/questionBank' || process.env.MONGODB_URI, { useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/questionBank', { useNewUrlParser: true});
 var db = mongoose.connection;
 
 // Added check for DB connection

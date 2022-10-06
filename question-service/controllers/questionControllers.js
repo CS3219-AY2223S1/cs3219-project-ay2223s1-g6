@@ -40,6 +40,27 @@ exports.view = function (req, res, next) {
         });
     });
 };
+
+// Handle view question info
+exports.getRandomQuestionNo = function (req, res, next) {
+    var inputDifficultyLevel = req.params.difficultyLevel ? req.params.difficultyLevel : req.body.difficulty
+    Questions.find({difficulty: inputDifficultyLevel}, function(err, question) {
+        var sizeOfQuestion = question.length
+        var randomIndex = Math.floor(Math.random() * (sizeOfQuestion))
+        var questionExtracted = question[randomIndex]
+        var questionIdExtracted = questionExtracted["_id"]
+        if (err) {
+            res.json("encounter error while find the question number: " + err);
+            return next(err);
+        }
+
+        res.json({
+            message: 'Question number sent',
+            data: questionIdExtracted
+        });
+    });
+};
+
 // Handle update question info
 exports.update = function (req, res, next) {
     Questions.findById(req.params.question_id ? req.params.question_id : req.body._id, function (err, question) {
