@@ -1,3 +1,5 @@
+import axios from 'axios';
+import io from '../index.js';
 import {
   createPendingMatch,
   createRoom,
@@ -6,7 +8,6 @@ import {
   findSameLevelPendingMatch,
   getRoomByUsername,
 } from './repository.js';
-import io from '../index.js';
 
 export async function newMatch(username, difficultyLevel, socket) {
   // console.log(socket.rooms);
@@ -37,6 +38,12 @@ export async function newMatch(username, difficultyLevel, socket) {
     // TODO: but let's not concern about it for now
     await deletePendingMatch(pendingMatch.username, difficultyLevel);
     socket.join(pendingMatch.roomId);
+
+    // ask question service for a random question id
+    // TODO: reference config file for question service url
+    const resp = await axios.get('http://localhost:8002/api/questions/randomId');
+    console.log(resp);
+
     // add both users into Room DB
     await createRoom(pendingMatch.username, pendingMatch.roomId, difficultyLevel);
     await createRoom(username, pendingMatch.roomId, difficultyLevel);
