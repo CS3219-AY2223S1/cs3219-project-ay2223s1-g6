@@ -24,6 +24,7 @@ import {
 // var abc = require('../controllers/question-controller');
 
 // create contact
+// <<<<<<< HEAD
 // router.route('/add').post(questionsController.new)
 // router.route('/delete/:question_id?').delete(questionsController.delete)
 // router.route('/update/:question_id?').put(questionsController.update)
@@ -34,6 +35,12 @@ router.route('/:difficultyLevel?').get(_getRandomQuestionNo)
 router.route('/:question_id?').get(_viewQuestion)
 router.route('/:question_id?').put(_updateQuestion)
 router.route('/:question_id?').delete(_deleteQuestion)
+//
+// router.route('/add').post(questionsController.new)
+// router.route('/delete/:question_id?').delete(questionsController.delete)
+// router.route('/update/:question_id?').put(questionsController.update)
+// router.route('/read/:question_id?').get(questionsController.view)
+// router.route('/randomId/:difficultyLevel').get(questionsController.getRandomQuestionNo);
 
 export default router;
 //module.exports = router;

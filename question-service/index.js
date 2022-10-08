@@ -35,13 +35,17 @@ import router from "./question_routers/questions_api.js";
 // import { createUser } from './controllers/question-controller';
 
 // Setup server port
-var port = 4002 || process.env.PORT;
+const port = process.env.PORT ||8002;
 
 // Send message for default URL
 app.get('/', (req, res) => res.send('Hello World with Express'));
 
 //Use Api routes in the App
-app.use('/questions', router);
+// <<<<<<< HEAD
+// app.use('/questions', router);
+// =======
+app.use('/api/questions', apiRoutes);
+// >>>>>>> 2ec9c2c58119b79a393d3c07a75875ab6680008f
 // Launch app to listen to specified port
 console.log(port)
 app.listen(port, function () {
