@@ -40,9 +40,9 @@ export async function findSameLevelPendingMatch(difficultyLevel) {
   }
 }
 
-export async function createRoom(username, roomId, difficultyLevel) {
+export async function createRoom(username, roomId, difficultyLevel, questionId) {
   if (difficultyLevel === 'easy' || difficultyLevel === 'medium' || difficultyLevel === 'hard') {
-    return Room.create({ username, roomId, difficultyLevel });
+    return Room.create({ username, roomId, difficultyLevel, questionId });
   } else {
     throw new Error('Invalid difficulty level');
   }

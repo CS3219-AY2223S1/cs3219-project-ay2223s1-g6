@@ -1,5 +1,5 @@
-import { db } from './database.js';
 import { Sequelize } from 'sequelize';
+import { db } from './database.js';
 
 export const Room = db.define('Room', {
     username: {
@@ -11,6 +11,10 @@ export const Room = db.define('Room', {
       allowNull: false,
     },
     difficultyLevel: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    questionId: {
       type: Sequelize.STRING,
       allowNull: false,
     },
