@@ -30,13 +30,13 @@ else
     console.log("Db connected successfully")
 
 // Setup server port
-var port = 4002 || process.env.PORT;
+const port = process.env.PORT ||8002;
 
 // Send message for default URL
 app.get('/', (req, res) => res.send('Hello World with Express'));
 
 //Use Api routes in the App
-app.use('/questions', apiRoutes);
+app.use('/api/questions', apiRoutes);
 // Launch app to listen to specified port
 console.log(port)
 app.listen(port, function () {

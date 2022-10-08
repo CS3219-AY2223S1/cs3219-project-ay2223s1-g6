@@ -17,7 +17,7 @@ router.route('/add').post(questionsController.new)
 router.route('/delete/:question_id?').delete(questionsController.delete)
 router.route('/update/:question_id?').put(questionsController.update)
 router.route('/read/:question_id?').get(questionsController.view)
-router.route('/readRandom/:difficultyLevel?').get(questionsController.getRandomQuestionNo)
+router.route('/randomId/:difficultyLevel').get(questionsController.getRandomQuestionNo);
 
 
 module.exports = router;

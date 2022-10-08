@@ -55,8 +55,7 @@ exports.getRandomQuestionNo = function (req, res, next) {
         }
 
         res.json({
-            message: 'Question number sent',
-            data: questionIdExtracted
+            questionId: questionIdExtracted
         });
     });
 };
