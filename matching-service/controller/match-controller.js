@@ -2,7 +2,7 @@ import { enterRoom, leaveRoom, newMatch } from '../model/service.js';
 
 export async function handleNewMatch(data, socket) {
   try {
-    const { username, difficultyLevel } = data;
+    const { token, username, difficultyLevel } = data;
     if (username && difficultyLevel) {
       await newMatch(username, difficultyLevel, socket);
     } else {
@@ -16,7 +16,7 @@ export async function handleNewMatch(data, socket) {
 
 export async function handleEnterRoom(data, socket) {
   try {
-    const { username } = data;
+    const { token, username } = data;
     if (username) {
       await enterRoom(username, socket);
     } else {
@@ -29,7 +29,7 @@ export async function handleEnterRoom(data, socket) {
 
 export async function handleLeaveRoom(data, socket) {
   try {
-    const { username } = data;
+    const { token, username } = data;
     if (username) {
       await leaveRoom(username);
     } else {
