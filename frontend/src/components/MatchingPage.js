@@ -8,11 +8,10 @@ import {
     DialogTitle,
     Typography
 } from "@mui/material";
-import {useState} from "react";
+import { useState } from "react";
 import { io } from "socket.io-client";
-import {URL_MATCH_SVC} from "../configs";
-import {STATUS_CODE_MATCH} from "../constants";
-import {Link} from "react-router-dom";
+import { URL_MATCH_SVC } from "../configs";
+import { Link } from "react-router-dom";
 
 function MatchingPage(props) {
     const username = props.username;
@@ -33,7 +32,7 @@ function MatchingPage(props) {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState("");
-    const [difficulty, setDifficulty] = useState(0);
+    const [difficulty, setDifficulty] = useState("");
     const [isSuccessful, setIsSuccessful] = useState(false);
 
     const handleMatch = () => {
@@ -42,17 +41,17 @@ function MatchingPage(props) {
     }
     
     const handleEasyMatch = () => {
-        setDifficulty(1);
+        setDifficulty('easy');
         handleMatch();
     }
 
     const handleMedMatch = () => {
-        setDifficulty(2);
+        setDifficulty('medium');
         handleMatch();
     }
 
     const handleDifMatch = () => {
-        setDifficulty(3);
+        setDifficulty('hard');
         handleMatch();
     }
 
@@ -69,7 +68,7 @@ function MatchingPage(props) {
             <Box display={"flex"} flexDirection={"row"}>
                 <Button variant={"outlined"} onClick={handleEasyMatch}>Match - Easy</Button>
                 <Button variant={"outlined"} onClick={handleMedMatch}>Match - Medium</Button>
-                <Button variant={"outlined"} onClick={handleDifMatch}>Match - Difficult</Button>
+                <Button variant={"outlined"} onClick={handleDifMatch}>Match - Hard</Button>
             </Box>
 
             <Dialog
