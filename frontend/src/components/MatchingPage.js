@@ -8,7 +8,7 @@ import {
     DialogTitle,
     Typography
 } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 import { io } from "socket.io-client";
 import { URL_MATCH_SVC } from "../configs";
 import { Link } from "react-router-dom";
@@ -30,6 +30,7 @@ class MatchingPage extends React.Component {
                 isSuccessful: false, 
                 isDialogOpen: true
             }));
+            this.props.setQuestionID(msg.data.questionId);
         });
         this.state.socket.on('match failure', (msg) => {
             this.setState((state, props) => ({

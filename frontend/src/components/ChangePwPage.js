@@ -13,7 +13,7 @@ import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function ChangePwPage(props) {
     const username = props.username;
@@ -38,19 +38,10 @@ function ChangePwPage(props) {
         setIsDialogOpen(true);
     }
 
-    // stub
-    /*const handleChangePw = () => {
-        setDialogMsg('Successful');
-        setIsSuccessful(true);
-        setUsername('');
-        console.log('username is empty');
-        setIsDialogOpen(true);
-    }*/
-
     const closeDialog = () => setIsDialogOpen(false);
 
     return (
-        <Box display={"flex"} flexDirection={"column"}>
+        <Box display={"flex"} flexDirection={"column"} width={"30%"}>
             <Typography variant={"h3"} marginBottom={"2rem"}>Change Password</Typography>
             <TextField
                 label="Password"

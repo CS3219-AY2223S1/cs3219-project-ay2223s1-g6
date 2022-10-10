@@ -7,11 +7,11 @@ import {
     DialogContentText,
     DialogTitle,
 } from "@mui/material";
-import {useState} from "react";
+import { useState } from "react";
 import axios from "axios";
-import {URL_USER_SVC} from "../configs";
-import {STATUS_CODE_SUCCESS} from "../constants";
-import {Link} from "react-router-dom";
+import { URL_USER_SVC } from "../configs";
+import { STATUS_CODE_SUCCESS } from "../constants";
+import { Link } from "react-router-dom";
 
 function LogoutPage(props) {
     const username = props.username;
@@ -25,29 +25,20 @@ function LogoutPage(props) {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC, { username })
             .catch((err) => {
-                setDialogMsg('Unsuccessful');
+                setDialogMsg(err.response.data.message);
             })
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            setDialogMsg('Successful');
+            setDialogMsg(res.data.message);
             setIsSuccessful(true);
             setUsername('');
         }
         setIsDialogOpen(true);
     }
 
-    // stub
-    /*const handleLogout = () => {
-        setDialogMsg('Successful');
-        setIsSuccessful(true);
-        setUsername('');
-        console.log('username is empty');
-        setIsDialogOpen(true);
-    }*/
-
     const closeDialog = () => setIsDialogOpen(false);
 
     return (
-        <Box display={"flex"} flexDirection={"column"}>
+        <Box display={"flex"} flexDirection={"column"} width={"30%"}>
             <Button variant={"outlined"} onClick={handleLogout}>Log out</Button>
 
             <Dialog
@@ -60,7 +51,7 @@ function LogoutPage(props) {
                 </DialogContent>
                 <DialogActions>
                     {isSuccessful
-                        ? <Button component={Link} to="/login">Home</Button>
+                        ? <Button component={Link} to="/">Home</Button>
                         : <Button onClick={closeDialog}>Done</Button>
                     }
                 </DialogActions>

@@ -10,7 +10,8 @@ import {Box} from "@mui/material";
 import {useState} from "react";
 
 function App() {
-    const[username, setUsername] = useState('');
+    const [username, setUsername] = useState('');
+    const [questionID, setQuestionID] = useState(0);
 
     return (
         <div className="App">
@@ -20,8 +21,8 @@ function App() {
                         <Route exact path="/" element={<Navigate replace to="/login" />}></Route>
                         <Route path="/newacc" element={<SignupPage setUsername={setUsername} />}/>
                         <Route path="/login" element={<LoginPage setUsername={setUsername} />} />
-                        <Route path="/match" element={<MatchingPage username={username} />} />
-                        <Route path="/room" element={<RoomPage />} />
+                        <Route path="/match" element={<MatchingPage username={username} setQuestionID={setQuestionID} />} />
+                        <Route path="/room" element={<RoomPage username={username} questionID={questionID} />} />
 
                         <Route path="/logout" element={<LogoutPage username={username} setUsername={setUsername} />} />
                         <Route path="/deleteacc" element={<DeleteAccPage username={username} setUsername={setUsername} />} />

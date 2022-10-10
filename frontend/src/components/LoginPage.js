@@ -13,7 +13,7 @@ import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function LoginPage(props) {
     const setUsername = props.setUsername;
@@ -61,6 +61,7 @@ function LoginPage(props) {
             <Box display={"flex"} flexDirection={"row"} justifyContent={"space-around"}>
                 <Button variant={"outlined"} component={Link} to="/newacc">Signup</Button>
                 <Button variant={"outlined"} onClick={handleLogin}>Log in</Button>
+                <Button variant={"outlined"} component={Link} to="/updateacc">Change Password</Button>
             </Box>
 
             <Dialog
