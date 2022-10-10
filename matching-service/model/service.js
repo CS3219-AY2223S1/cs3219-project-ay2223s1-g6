@@ -18,14 +18,20 @@ export async function newMatch(username, difficultyLevel, socket) {
     const roomId = (Math.random() + 1).toString(36).slice(2, 18);
     await createPendingMatch(username, difficultyLevel, roomId);
     socket.join(roomId);
-    socket.emit('start waiting', 'no match at current moment, waiting for 30 seconds');
+    socket.emit('start waiting', {
+      status: 202,
+      message: 'No match at current moment, start waiting for 30 seconds',
+    });
     setTimeout(async () => {
       // after 30 seconds, check if the user is still in the DB
       // if in DB -> match failure, remove the user
       const numUsersDeleted = await deletePendingMatch(username, difficultyLevel);
       if (numUsersDeleted === 1) {
         socket.leave(roomId);
-        socket.emit('match failure', 'no match could be found after waiting for 30 seconds');
+        socket.emit('match failure', {
+          status: 404,
+          message: 'No match could be found after waiting for 30 seconds',
+        });
       }
     }, 30 * 1000);
   } else {
@@ -42,7 +48,13 @@ export async function newMatch(username, difficultyLevel, socket) {
     await createRoom(pendingMatch.username, pendingMatch.roomId, difficultyLevel, questionId);
     await createRoom(username, pendingMatch.roomId, difficultyLevel, questionId);
 
-    io.of('/api/match').in(pendingMatch.roomId).emit('match success', { questionId });
+    io.of('/api/match').in(pendingMatch.roomId).emit('match success', {
+      status: 200,
+      message: 'Match found',
+      data: {
+        questionId: questionId,
+      },
+    });
     console.log(`user ${username} and ${pendingMatch.username} are in room: ${pendingMatch.roomId}`);
   }
   return true;
@@ -52,8 +64,17 @@ export async function enterRoom(username, socket) {
   const room = await getRoomByUsername(username);
   if (room) {
     socket.join(room.roomId);
-    socket.emit('in room', { roomId: room.roomId, difficultyLevel: room.difficultyLevel });
+    socket.emit('in room', {
+      status: 200,
+      message: 'Socket joined room successfully',
+      data: {
+        roomId: room.roomId,
+        difficultyLevel: room.difficultyLevel,
+        questionId: room.questionId,
+      },
+    });
   } else {
+    // this is an internal server error because it indicates the caller's logic is badly written
     throw new Error(`No room for user ${username} to enter. Ensure 'match success' is received before 'enter room'.`);
   }
 }
@@ -63,9 +84,15 @@ export async function leaveRoom(username) {
   if (room) {
     await deleteRoomByRoomId(room.roomId);
   } else {
+    // this is an internal server error because it indicates the caller's logic is badly written
     throw new Error(`No room for user ${username} to leave. Ensure 'match success' is received before 'leave room'.`);
   }
 
+  // TODO: Should the socket leave the room?
+
   // for frontend to close the room for both users
-  io.of('/api/match').in(room.roomId).emit('room closing');
+  io.of('/api/match').in(room.roomId).emit('room closing', {
+    status: 200,
+    message: 'Room destroyed successfully',
+  });
 }
