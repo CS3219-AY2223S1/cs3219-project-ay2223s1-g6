@@ -1,9 +1,10 @@
-import mongoose from 'mongoose';
-var Schema = mongoose.Schema
-let UserModelSchema = new Schema({
+import * as mongoose from 'mongoose'
+
+const UserModelSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
+        immutable: true,
         unique: true,
     },
     password: {
