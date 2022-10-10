@@ -9,10 +9,10 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {useState} from "react";
+import { useState } from "react";
 import axios from "axios";
-import {URL_USER_SVC} from "../configs";
-import {STATUS_CODE_CHANGEPW} from "../constants";
+import { URL_USER_SVC } from "../configs";
+import { STATUS_CODE_SUCCESS } from "../constants";
 import {Link} from "react-router-dom";
 
 function ChangePwPage(props) {
@@ -28,10 +28,10 @@ function ChangePwPage(props) {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC, { username, password })
             .catch((err) => {
-                setDialogMsg('Unsuccessful');
+                setDialogMsg(err.response.data.message);
             })
-        if (res && res.status === STATUS_CODE_CHANGEPW) {
-            setDialogMsg('Successful');
+        if (res && res.status === STATUS_CODE_SUCCESS) {
+            setDialogMsg(res.data.message);
             setIsSuccessful(true);
             setUsername('');
         }

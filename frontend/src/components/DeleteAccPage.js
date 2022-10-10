@@ -10,7 +10,7 @@ import {
 import {useState} from "react";
 import axios from "axios";
 import {URL_USER_SVC} from "../configs";
-import {STATUS_CODE_DELACC} from "../constants";
+import {STATUS_CODE_SUCCESS} from "../constants";
 import {Link} from "react-router-dom";
 
 function DeleteAccPage(props) {
@@ -27,7 +27,7 @@ function DeleteAccPage(props) {
             .catch((err) => {
                 setDialogMsg('Unsuccessful');
             })
-        if (res && res.status === STATUS_CODE_DELACC) {
+        if (res && res.status === STATUS_CODE_SUCCESS) {
             setDialogMsg('Successful');
             setIsSuccessful(true);
             setUsername('');

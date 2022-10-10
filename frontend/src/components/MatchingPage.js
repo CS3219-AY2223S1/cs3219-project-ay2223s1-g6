@@ -8,56 +8,76 @@ import {
     DialogTitle,
     Typography
 } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import { io } from "socket.io-client";
 import { URL_MATCH_SVC } from "../configs";
 import { Link } from "react-router-dom";
 
-function MatchingPage(props) {
-    const username = props.username;
-    //console.log('username is ' + username);
-    //console.log('cookie: ' + document.cookie);
+class MatchingPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isDialogOpen: false, 
+            dialogMsg: "", 
+            difficulty: "", 
+            isSuccessful: false,
+            socket: io(URL_MATCH_SVC)
+        };
 
-    const socket = io(URL_MATCH_SVC);
-    socket.on('match success', () => {
-        setDialogMsg('Successful');
-        setIsSuccessful(true);
-        setIsDialogOpen(true);
-    });
-    socket.on('match failure', (msg) => {
-        setDialogMsg(msg);
-        setIsSuccessful(false);
-        setIsDialogOpen(true);
-    });
+        this.state.socket.on('match success', (msg) => {
+            this.setState((state, props) => ({
+                dialogMsg: msg.message, 
+                isSuccessful: false, 
+                isDialogOpen: true
+            }));
+        });
+        this.state.socket.on('match failure', (msg) => {
+            this.setState((state, props) => ({
+                dialogMsg: msg.message, 
+                isSuccessful: false, 
+                isDialogOpen: true
+            }));
+        });
+    }
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [dialogMsg, setDialogMsg] = useState("");
-    const [difficulty, setDifficulty] = useState("");
-    const [isSuccessful, setIsSuccessful] = useState(false);
-
-    const handleMatch = () => {
-        setIsSuccessful(false);
-        socket.emit("new match", { username: username, difficultyLevel: difficulty });
+    handleMatch = () => {
+        this.setState((state, props) => ({
+            isSuccessful: false
+        }));
+        this.state.socket.emit("new match", { 
+            token: document.cookie, 
+            username: this.props.username, 
+            difficultyLevel: this.state.difficulty 
+        });
     }
     
-    const handleEasyMatch = () => {
-        setDifficulty('easy');
-        handleMatch();
+    handleEasyMatch = () => {
+        this.setState((state, props) => ({
+            difficulty: 'easy'
+        }));
+        this.handleMatch();
     }
 
-    const handleMedMatch = () => {
-        setDifficulty('medium');
-        handleMatch();
+    handleMedMatch = () => {
+        this.setState((state, props) => ({
+            difficulty: 'medium' 
+        }));
+        this.handleMatch();
     }
 
-    const handleDifMatch = () => {
-        setDifficulty('hard');
-        handleMatch();
+    handleDifMatch = () => {
+        this.setState((state, props) => ({
+            difficulty: 'hard' 
+        }));
+        this.handleMatch();
     }
 
-    const closeDialog = () => setIsDialogOpen(false);
+    closeDialog = () => this.setState((state, props) => ({
+        isDialogOpen: false
+    }));
 
-    return (
+    render() {
+        return (
         <Box display={"flex"} flexDirection={"column"}>
             <Typography variant={"h3"} marginBottom={"2rem"}>Match with a Friend!</Typography>
             <Box display={"flex"} flexDirection={"row"}>
@@ -66,28 +86,29 @@ function MatchingPage(props) {
                 <Button variant={"outlined"} component={Link} to="/updateacc">Change Password</Button>
             </Box>
             <Box display={"flex"} flexDirection={"row"}>
-                <Button variant={"outlined"} onClick={handleEasyMatch}>Match - Easy</Button>
-                <Button variant={"outlined"} onClick={handleMedMatch}>Match - Medium</Button>
-                <Button variant={"outlined"} onClick={handleDifMatch}>Match - Hard</Button>
+                <Button variant={"outlined"} onClick={this.handleEasyMatch}>Match - Easy</Button>
+                <Button variant={"outlined"} onClick={this.handleMedMatch}>Match - Medium</Button>
+                <Button variant={"outlined"} onClick={this.handleDifMatch}>Match - Hard</Button>
             </Box>
 
             <Dialog
-                open={isDialogOpen}
-                onClose={closeDialog}
+                open={this.state.isDialogOpen}
+                onClose={this.closeDialog}
             >
                 <DialogTitle>Match</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>{dialogMsg}</DialogContentText>
+                    <DialogContentText>{this.state.dialogMsg}</DialogContentText>
                 </DialogContent>
                 <DialogActions> 
-                    {isSuccessful
+                    {this.state.isSuccessful
                         ? <Button component={Link} to="/room">Proceed to Room</Button>
-                        : <Button onClick={closeDialog}>Done</Button>
+                        : <Button onClick={this.closeDialog}>Done</Button>
                     }
                 </DialogActions>
             </Dialog>
         </Box>
-    )
+        )
+    }
 }
 
 export default MatchingPage;

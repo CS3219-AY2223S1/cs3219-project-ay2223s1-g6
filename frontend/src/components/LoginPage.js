@@ -9,10 +9,10 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {useState} from "react";
+import { useState } from "react";
 import axios from "axios";
-import {URL_USER_SVC} from "../configs";
-import {STATUS_CODE_LOGIN} from "../constants";
+import { URL_USER_SVC } from "../configs";
+import { STATUS_CODE_SUCCESS } from "../constants";
 import {Link} from "react-router-dom";
 
 function LoginPage(props) {
@@ -27,25 +27,15 @@ function LoginPage(props) {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC, { tempUsername, password })
             .catch((err) => {
-                setDialogMsg('Unsuccessful');
+                setDialogMsg(err.response.data.message);
             })
-        if (res && res.status === STATUS_CODE_LOGIN) {
-            setDialogMsg('Successful');
+        if (res && res.status === STATUS_CODE_SUCCESS) {
+            setDialogMsg(res.data.message);
             setIsSuccessful(true);
             setUsername(tempUsername);
-            //document.cookie = res.data.jwt;
         }
         setIsDialogOpen(true);
     }
-
-    // stub
-    /*const handleLogin = () => {
-        setDialogMsg('Successful');
-        setIsSuccessful(true);
-        setUsername(tempUsername);
-        console.log('username is '+ tempUsername);
-        setIsDialogOpen(true);
-    }*/
 
     const closeDialog = () => setIsDialogOpen(false);
 
@@ -68,7 +58,8 @@ function LoginPage(props) {
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{marginBottom: "2rem"}}
             />
-            <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
+            <Box display={"flex"} flexDirection={"row"} justifyContent={"space-around"}>
+                <Button variant={"outlined"} component={Link} to="/newacc">Signup</Button>
                 <Button variant={"outlined"} onClick={handleLogin}>Log in</Button>
             </Box>
 
@@ -82,7 +73,7 @@ function LoginPage(props) {
                 </DialogContent>
                 <DialogActions>
                     {isSuccessful
-                        ? <Button component={Link} to="/match">Proceed to match</Button>
+                        ? <Button component={Link} to="/match">Proceed</Button>
                         : <Button onClick={closeDialog}>Done</Button>
                     }
                 </DialogActions>

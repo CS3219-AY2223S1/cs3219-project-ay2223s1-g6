@@ -17,11 +17,11 @@ function App() {
             <Box display={"flex"} flexDirection={"column"} padding={"4rem"}>
                 <Router>
                     <Routes>
-                        <Route exact path="/" element={<Navigate replace to="/newacc" />}></Route>
-                        <Route path="/newacc" element={<SignupPage/>}/>
+                        <Route exact path="/" element={<Navigate replace to="/login" />}></Route>
+                        <Route path="/newacc" element={<SignupPage setUsername={setUsername} />}/>
                         <Route path="/login" element={<LoginPage setUsername={setUsername} />} />
                         <Route path="/match" element={<MatchingPage username={username} />} />
-                        <Route path="/room" element={<RoomPage/>} />
+                        <Route path="/room" element={<RoomPage />} />
 
                         <Route path="/logout" element={<LogoutPage username={username} setUsername={setUsername} />} />
                         <Route path="/deleteacc" element={<DeleteAccPage username={username} setUsername={setUsername} />} />

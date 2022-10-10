@@ -10,7 +10,7 @@ import {
 import {useState} from "react";
 import axios from "axios";
 import {URL_USER_SVC} from "../configs";
-import {STATUS_CODE_LOGOUT} from "../constants";
+import {STATUS_CODE_SUCCESS} from "../constants";
 import {Link} from "react-router-dom";
 
 function LogoutPage(props) {
@@ -27,7 +27,7 @@ function LogoutPage(props) {
             .catch((err) => {
                 setDialogMsg('Unsuccessful');
             })
-        if (res && res.status === STATUS_CODE_LOGOUT) {
+        if (res && res.status === STATUS_CODE_SUCCESS) {
             setDialogMsg('Successful');
             setIsSuccessful(true);
             setUsername('');
