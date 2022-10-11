@@ -3,13 +3,18 @@ import { enterRoom, leaveRoom, newMatch } from '../model/service.js';
 
 async function authenticateUser(username, token) {
   // TODO: reference config file for user service url
-  const resp = await axios.get('http://localhost:8000/api/user/authentication', {
+  let authSuccess;
+  await axios.get('http://localhost:8000/api/user/authentication', {
     params: {
       username: username,
       auth: token,
     },
+  }).then(() => {
+    authSuccess = true;
+  }).catch(() => {
+    authSuccess = false;
   });
-  return resp.status === 201;
+  return authSuccess;
 }
 
 export async function handleNewMatch(data, socket) {
@@ -22,6 +27,7 @@ export async function handleNewMatch(data, socket) {
           status: 403,
           message: 'Not allowed to access this resource',
         });
+        return;
       }
       await newMatch(username, difficultyLevel, socket);
     } else {
@@ -48,6 +54,7 @@ export async function handleEnterRoom(data, socket) {
           status: 403,
           message: 'Not allowed to access this resource',
         });
+        return;
       }
       await enterRoom(username, socket);
     } else {
@@ -74,6 +81,7 @@ export async function handleLeaveRoom(data, socket) {
           status: 403,
           message: 'Not allowed to access this resource',
         });
+        return;
       }
       await leaveRoom(username);
     } else {
