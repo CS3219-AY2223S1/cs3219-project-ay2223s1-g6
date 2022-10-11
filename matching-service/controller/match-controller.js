@@ -1,9 +1,28 @@
+import axios from 'axios';
 import { enterRoom, leaveRoom, newMatch } from '../model/service.js';
+
+async function authenticateUser(username, token) {
+  // TODO: reference config file for user service url
+  const resp = await axios.get('http://localhost:8000/api/user/authentication', {
+    params: {
+      username: username,
+      auth: token,
+    },
+  });
+  return resp.status === 201;
+}
 
 export async function handleNewMatch(data, socket) {
   try {
     const { token, username, difficultyLevel } = data;
     if (token && username && difficultyLevel) {
+      const authSuccess = await authenticateUser(username, token);
+      if (!authSuccess) {
+        socket.emit('match failure', {
+          status: 403,
+          message: 'Not allowed to access this resource',
+        });
+      }
       await newMatch(username, difficultyLevel, socket);
     } else {
       socket.emit('match failure', {
@@ -23,6 +42,13 @@ export async function handleEnterRoom(data, socket) {
   try {
     const { token, username } = data;
     if (token && username) {
+      const authSuccess = await authenticateUser(username, token);
+      if (!authSuccess) {
+        socket.emit('enter room failure', {
+          status: 403,
+          message: 'Not allowed to access this resource',
+        });
+      }
       await enterRoom(username, socket);
     } else {
       socket.emit('enter room failure', {
@@ -42,6 +68,13 @@ export async function handleLeaveRoom(data, socket) {
   try {
     const { token, username } = data;
     if (token && username) {
+      const authSuccess = await authenticateUser(username, token);
+      if (!authSuccess) {
+        socket.emit('leave room failure', {
+          status: 403,
+          message: 'Not allowed to access this resource',
+        });
+      }
       await leaveRoom(username);
     } else {
       socket.emit('leave room failure', {
