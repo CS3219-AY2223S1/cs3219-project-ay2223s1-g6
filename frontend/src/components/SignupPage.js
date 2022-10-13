@@ -9,11 +9,12 @@ import {
     TextField,
     Typography
 } from "@mui/material";
+import Cookies from 'js-cookie';
 import { useState } from "react";
 import axios from "axios";
 import { URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
 function SignupPage(props) {
     const {setUsername} = props;
@@ -24,9 +25,11 @@ function SignupPage(props) {
     const [dialogMsg, setDialogMsg] = useState("");
     const [isSuccessful, setIsSuccessful] = useState(false);
 
+    const navigate = useNavigate();
+
     const handleSignup = async () => {
         setIsSuccessful(false);
-        const res = await axios.post(URL_USER_SVC+'/account', { username: tempUsername, password: password })
+        const res = await axios.post(URL_USER_SVC+'/account', { username: tempUsername, password: password }, { withCredentials: true })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })
@@ -34,6 +37,8 @@ function SignupPage(props) {
             setDialogMsg(res.data.message);
             setIsSuccessful(true);
             setUsername(tempUsername);
+            Cookies.set('username', tempUsername);
+            navigate('/match');
         }
         setIsDialogOpen(true);
     }

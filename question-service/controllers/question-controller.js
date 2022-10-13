@@ -41,7 +41,7 @@ export async function getRandomQuestionNo(req, res) {
             return res.status(400).json({message: 'Could not get a question based on the difficulty level!'});
         } else {
             console.log(`Get new question of difficulty ${inputDifficultyLevel} successfully!`)
-            return res.status(201).json({message: `Get new questions no: ${resp} successfully!`});
+            return res.status(201).json({message: `Get new questions no: ${resp} successfully!`, questionId: resp});
         }
     } catch (err) {
         return res.status(500).json({message: 'Database failure when getting a question based on the difficulty level!'})
@@ -57,7 +57,7 @@ export async function viewQuestion(req, res) {
             return res.status(400).json({message: 'Could not get a question number!'});
         } else {
             console.log(`Get question number ${questionNo} successfully!`)
-            return res.status(201).json({message: `Get questions no: ${questionNo} successfully!`, question: `${resp}`});
+            return res.status(201).json({message: `Get questions no: ${questionNo} successfully!`, question: resp});
         }
     } catch (err) {
         return res.status(500).json({message: 'Database failure when getting a question number!'})

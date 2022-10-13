@@ -8,14 +8,15 @@ import {
     DialogTitle,
     Typography
 } from "@mui/material";
+import Cookies from 'js-cookie';
 import React from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { URL_MATCH_SVC, URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
-class MatchingPage extends React.Component {
+class MyMatchingPage extends React.Component {
     constructor(props) {
         super(props);
         console.log('matching props: '+this.props.username);
@@ -36,6 +37,7 @@ class MatchingPage extends React.Component {
                 isDialogOpen: true
             }));
             this.props.setQuestionID(msg.data.questionId);
+            this.props.navigate('/room');
         });
         this.state.socket.on('match failure', (msg) => {
             this.setState(() => ({
@@ -74,9 +76,9 @@ class MatchingPage extends React.Component {
             isSuccessful: false
         }));
         this.state.socket.emit('new match', {
-            token: document.cookie, 
-            username: this.props.username, 
-            difficultyLevel: this.state.difficulty 
+            token: Cookies.get('auth'),
+            username: Cookies.get('username'),
+            difficultyLevel: this.state.difficulty
         });
     }
     
@@ -143,4 +145,7 @@ class MatchingPage extends React.Component {
     }
 }
 
-export default MatchingPage;
+export default function MatchingPage(props) {
+  const navigate = useNavigate();
+  return <MyMatchingPage {...props} navigate={navigate}/>;
+}

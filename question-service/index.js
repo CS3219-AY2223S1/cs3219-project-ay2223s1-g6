@@ -1,9 +1,12 @@
 // Import express
-//let express = require('express');
-import express from 'express'
+import cors from 'cors';
 // Import Body parser
 //let bodyParser = require('body-parser');
-import bodyParser from 'body-parser'
+import bodyParser from 'body-parser';
+//let express = require('express');
+import express from 'express';
+// Import routes
+import router from './question_routers/questions_api.js';
 // Import Mongoose
 //let mongoose = require('mongoose');
 // Initialise the app
@@ -15,10 +18,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+app.use(cors()); // config cors so that front-end can use
+app.options('*', cors()); // TODO: what's this?
 
-
-// Import routes
-import router from "./question_routers/questions_api.js";
 //let apiRoutes = require("./question_routers/questions_api.js");
 // // Connect to Mongoose and set connection variable
 // console.log(process.env.MONGODB_URI)

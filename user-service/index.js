@@ -8,7 +8,10 @@ dotenv.config()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cookieParser());
-app.use(cors()) // config cors so that front-end can use
+app.use(cors({
+    origin: ['http://localhost:3000'],
+    credentials: true,
+})) // config cors so that front-end can use
 app.options('*', cors())
 
 
