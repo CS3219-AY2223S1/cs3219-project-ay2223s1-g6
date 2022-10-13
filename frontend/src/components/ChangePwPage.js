@@ -16,8 +16,7 @@ import { STATUS_CODE_SUCCESS } from "../constants";
 import { Link } from "react-router-dom";
 
 function ChangePwPage(props) {
-    const username = props.username;
-    const setUsername = props.setUsername;
+    const {username, setUsername} = props;
 
     const [password, setPassword] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -26,7 +25,7 @@ function ChangePwPage(props) {
 
     const handleChangePw = async () => {
         setIsSuccessful(false);
-        const res = await axios.put(URL_USER_SVC+'/account', { username, password })
+        const res = await axios.put(URL_USER_SVC+'/account', { username: username, newPassword: password, token: document.cookie })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })

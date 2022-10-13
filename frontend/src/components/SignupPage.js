@@ -16,7 +16,8 @@ import { STATUS_CODE_SUCCESS } from "../constants";
 import { Link } from "react-router-dom";
 
 function SignupPage(props) {
-    const setUsername = props.setUsername;
+    const {setUsername} = props;
+    
     const [tempUsername, setTempUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -25,7 +26,7 @@ function SignupPage(props) {
 
     const handleSignup = async () => {
         setIsSuccessful(false);
-        const res = await axios.post(URL_USER_SVC+'/account', { tempUsername, password })
+        const res = await axios.post(URL_USER_SVC+'/account', { username: tempUsername, password: password })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })
