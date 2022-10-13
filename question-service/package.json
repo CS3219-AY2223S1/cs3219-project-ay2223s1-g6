@@ -4,11 +4,16 @@
   "description": "Insert and get questions",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "author": "yaoren",
   "type": "module",
   "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
