@@ -23,7 +23,7 @@ function DeleteAccPage(props) {
 
     const handleDelAcc = async () => {
         setIsSuccessful(false);
-        const res = await axios.delete(URL_USER_SVC+'./account', { username })
+        const res = await axios.delete(URL_USER_SVC+'/account', { username })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })
