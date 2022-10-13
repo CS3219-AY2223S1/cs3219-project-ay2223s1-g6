@@ -31,7 +31,7 @@ import {
 // router.route('/read/:question_id?').get(questionsController.view)
 // router.route('/readRandom/:difficultyLevel?').get(questionsController.getRandomQuestionNo)
 router.route('/').post(_createUser)
-router.route('/:difficultyLevel?').get(_getRandomQuestionNo)
+router.route('/randomId/:difficultyLevel?').get(_getRandomQuestionNo)
 router.route('/:question_id?').get(_viewQuestion)
 router.route('/:question_id?').put(_updateQuestion)
 router.route('/:question_id?').delete(_deleteQuestion)
