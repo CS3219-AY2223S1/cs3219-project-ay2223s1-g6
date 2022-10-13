@@ -9,8 +9,10 @@ import {
     Typography
 } from "@mui/material";
 import React from "react";
+import axios from "axios";
 import { io } from "socket.io-client";
-import { URL_MATCH_SVC } from "../configs";
+import { URL_MATCH_SVC, URL_USER_SVC } from "../configs";
+import { STATUS_CODE_SUCCESS } from "../constants";
 import { Link } from "react-router-dom";
 
 class MatchingPage extends React.Component {
@@ -18,6 +20,7 @@ class MatchingPage extends React.Component {
         super(props);
         this.state = {
             isDialogOpen: false, 
+            dialogTitle: '',
             dialogMsg: '', 
             difficulty: 'none', 
             isSuccessful: false,
@@ -26,6 +29,7 @@ class MatchingPage extends React.Component {
 
         this.state.socket.on('match success', (msg) => {
             this.setState(() => ({
+                dialogTitle: 'Match',
                 dialogMsg: msg.message, 
                 isSuccessful: false, 
                 isDialogOpen: true
@@ -34,11 +38,33 @@ class MatchingPage extends React.Component {
         });
         this.state.socket.on('match failure', (msg) => {
             this.setState(() => ({
+                dialogTitle: 'Match',
                 dialogMsg: msg.message, 
                 isSuccessful: false, 
                 isDialogOpen: true
             }));
         });
+    }
+
+    handleLogout = async () => {
+        const res = await axios.delete(URL_USER_SVC+'/login', { username: this.props.username })
+            .catch((err) => {
+                this.setState(() => ({
+                    dialogTitle: 'Logout',
+                    dialogMsg: err.response.data.message, 
+                    isSuccessful: false, 
+                    isDialogOpen: true
+                }));
+            });
+        if (res && res.status === STATUS_CODE_SUCCESS) {
+            this.props.setUsername('');
+            this.setState(() => ({
+                dialogTitle: 'Logout',
+                dialogMsg: res.data.message, 
+                isSuccessful: false, 
+                isDialogOpen: true
+            }));
+        }
     }
 
     handleMatch = () => {
@@ -73,6 +99,9 @@ class MatchingPage extends React.Component {
         );
     }
 
+    gotoChgPw = () => this.props.setMode('changePw');
+    gotoDelAcc = () => this.props.setMode('deleteAcc');
+
     closeDialog = () => this.setState(() => ({
         isDialogOpen: false
     }));
@@ -82,9 +111,9 @@ class MatchingPage extends React.Component {
         <Box display={"flex"} flexDirection={"column"}>
             <Typography variant={"h3"} marginBottom={"2rem"}>Match with a Friend!</Typography>
             <Box display={"flex"} flexDirection={"row"}>
-                <Button variant={"outlined"} component={Link} to="/logout">Log Out</Button>
-                <Button variant={"outlined"} component={Link} to="/deleteacc">Delete Account</Button>
-                <Button variant={"outlined"} component={Link} to="/updateacc">Change Password</Button>
+                <Button variant={"outlined"} onClick={this.handleLogout}>Log out</Button>
+                <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoDelAcc}>Delete Account</Button>
+                <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoChgPw}>Change Password</Button>
             </Box>
             <Box display={"flex"} flexDirection={"row"}>
                 <Button variant={"outlined"} onClick={this.handleEasyMatch}>Match - Easy</Button>

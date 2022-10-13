@@ -25,7 +25,7 @@ function SignupPage(props) {
 
     const handleSignup = async () => {
         setIsSuccessful(false);
-        const res = await axios.post(URL_USER_SVC, { tempUsername, password })
+        const res = await axios.post(URL_USER_SVC+'./account', { tempUsername, password })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })

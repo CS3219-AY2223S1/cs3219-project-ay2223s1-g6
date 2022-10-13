@@ -16,7 +16,7 @@ import { STATUS_CODE_SUCCESS } from "../constants";
 import { Link } from "react-router-dom";
 
 function LoginPage(props) {
-    const setUsername = props.setUsername;
+    const {setUsername, setMode} = props;
     const [tempUsername, setTempUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -25,7 +25,7 @@ function LoginPage(props) {
 
     const handleLogin = async () => {
         setIsSuccessful(false);
-        const res = await axios.post(URL_USER_SVC, { tempUsername, password })
+        const res = await axios.post(URL_USER_SVC+'/login', { tempUsername, password })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })
@@ -36,6 +36,8 @@ function LoginPage(props) {
         }
         setIsDialogOpen(true);
     }
+
+    const gotoSignup = () => setMode('signUp');
 
     const closeDialog = () => setIsDialogOpen(false);
 
@@ -59,9 +61,8 @@ function LoginPage(props) {
                 sx={{marginBottom: "2rem"}}
             />
             <Box display={"flex"} flexDirection={"row"} justifyContent={"space-around"}>
-                <Button variant={"outlined"} component={Link} to="/newacc">Signup</Button>
+                <Button variant={"outlined"} component={Link} to="/account" onClick={gotoSignup}>Signup</Button>
                 <Button variant={"outlined"} onClick={handleLogin}>Log in</Button>
-                <Button variant={"outlined"} component={Link} to="/updateacc">Change Password</Button>
             </Box>
 
             <Dialog
