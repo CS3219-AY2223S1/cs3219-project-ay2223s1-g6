@@ -9,49 +9,35 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {useState} from "react";
+import { useState } from "react";
 import axios from "axios";
-import {URL_USER_SVC} from "../configs";
-import {STATUS_CODE_CONFLICT, STATUS_CODE_CREATED} from "../constants";
-import {Link} from "react-router-dom";
+import { URL_USER_SVC } from "../configs";
+import { STATUS_CODE_SUCCESS } from "../constants";
+import { Link } from "react-router-dom";
 
-function SignupPage() {
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [dialogTitle, setDialogTitle] = useState("")
-    const [dialogMsg, setDialogMsg] = useState("")
-    const [isSignupSuccess, setIsSignupSuccess] = useState(false)
+function SignupPage(props) {
+    const setUsername = props.setUsername;
+    const [tempUsername, setTempUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [dialogMsg, setDialogMsg] = useState("");
+    const [isSuccessful, setIsSuccessful] = useState(false);
 
     const handleSignup = async () => {
-        setIsSignupSuccess(false)
-        const res = await axios.post(URL_USER_SVC, { username, password })
+        setIsSuccessful(false);
+        const res = await axios.post(URL_USER_SVC+'/account', { tempUsername, password })
             .catch((err) => {
-                if (err.response.status === STATUS_CODE_CONFLICT) {
-                    setErrorDialog('This username already exists')
-                } else {
-                    setErrorDialog('Please try again later')
-                }
+                setDialogMsg(err.response.data.message);
             })
-        if (res && res.status === STATUS_CODE_CREATED) {
-            setSuccessDialog('Account successfully created')
-            setIsSignupSuccess(true)
+        if (res && res.status === STATUS_CODE_SUCCESS) {
+            setDialogMsg(res.data.message);
+            setIsSuccessful(true);
+            setUsername(tempUsername);
         }
+        setIsDialogOpen(true);
     }
 
-    const closeDialog = () => setIsDialogOpen(false)
-
-    const setSuccessDialog = (msg) => {
-        setIsDialogOpen(true)
-        setDialogTitle('Success')
-        setDialogMsg(msg)
-    }
-
-    const setErrorDialog = (msg) => {
-        setIsDialogOpen(true)
-        setDialogTitle('Error')
-        setDialogMsg(msg)
-    }
+    const closeDialog = () => setIsDialogOpen(false);
 
     return (
         <Box display={"flex"} flexDirection={"column"} width={"30%"}>
@@ -59,8 +45,8 @@ function SignupPage() {
             <TextField
                 label="Username"
                 variant="standard"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={tempUsername}
+                onChange={(e) => setTempUsername(e.target.value)}
                 sx={{marginBottom: "1rem"}}
                 autoFocus
             />
@@ -80,13 +66,13 @@ function SignupPage() {
                 open={isDialogOpen}
                 onClose={closeDialog}
             >
-                <DialogTitle>{dialogTitle}</DialogTitle>
+                <DialogTitle>Sign Up</DialogTitle>
                 <DialogContent>
                     <DialogContentText>{dialogMsg}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    {isSignupSuccess
-                        ? <Button component={Link} to="/login">Log in</Button>
+                    {isSuccessful
+                        ? <Button component={Link} to="/match">Proceed</Button>
                         : <Button onClick={closeDialog}>Done</Button>
                     }
                 </DialogActions>
