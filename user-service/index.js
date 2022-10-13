@@ -25,13 +25,18 @@ const router = express.Router()
 
 // Controller will contain all the User-defined Routes
 router.get('/', (_, res) => res.send('Hello World from user-service'))
-router.post('/login', userLogin)
-router.post('/logout', userLogout)
-router.post('/newacc', createUser)
-router.post('/deleteacc', deleteUser)
-router.post('/updateacc', changePassword)
-
-router.post('/authenticate', userAuthentication)
+// form urlencoded data, username and password
+router.post('/login', userLogin) 
+// cookie + raw json, username
+router.delete('/login', userLogout)
+// form urlencode data, username and password
+router.post('/account', createUser)
+// cookie + raw json, username
+router.delete('/account', deleteUser)
+// cookie + form urlencode data, username and password
+router.put('/account', changePassword)
+// get /authentication?username=xxx&auth=xxx
+router.get('/authentication', userAuthentication)
 
 
 app.use('/api/user', router).all((_, res) => {

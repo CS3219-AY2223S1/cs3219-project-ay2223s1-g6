@@ -66,7 +66,7 @@ export async function changePassword(req, res) {
                 console.log(`User ${username} changed password successfully!`)
                 return res.status(201).json({ message: `User ${username} changed password successfully!` });
             } else {
-                return res.status(400).json({ message: `Could change password for user ${username}!` });
+                return res.status(400).json({ message: `Could not change password for user ${username}!` });
             }
         } else {
             console.log('Username and/or new password missing.');
@@ -84,7 +84,7 @@ export async function userLogin(req, res) {
         if (username && password) {
             const resp = await _userLogin(username, password);
             if (resp.OK) {
-                console.log(`User ${username} changed password successfully!`);
+                console.log(`User ${username} logged in successfully!`);
                 console.log(`Cached token: ${resp.token}`)
                 res.cookie('auth', resp.token)
                 //return res.redirect('/api/matching')
@@ -128,9 +128,9 @@ export async function userLogout(req, res) {
 
 export async function userAuthentication(req, res) {
     try {
-        const username = req.body.username;
+        const username = req.query.username
+        const token = req.query.auth
         if (username) {
-            const token = req.cookies.auth
             console.log('Received token:', token)
             const resp = await _authenticate(username, token);
             if (resp) {
