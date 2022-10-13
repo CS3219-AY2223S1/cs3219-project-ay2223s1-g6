@@ -14,8 +14,7 @@ import { STATUS_CODE_SUCCESS } from "../constants";
 import { Link } from "react-router-dom";
 
 function DeleteAccPage(props) {
-    const username = props.username;
-    const setUsername = props.setUsername;
+    const {username, setUsername} = props;
     
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState("");
@@ -23,7 +22,7 @@ function DeleteAccPage(props) {
 
     const handleDelAcc = async () => {
         setIsSuccessful(false);
-        const res = await axios.delete(URL_USER_SVC+'/account', { username })
+        const res = await axios.delete(URL_USER_SVC+'/account', { username: username, token: document.cookie })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })

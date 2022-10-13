@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 class MatchingPage extends React.Component {
     constructor(props) {
         super(props);
+        console.log('matching props: '+this.props.username);
         this.state = {
             isDialogOpen: false, 
             dialogTitle: '',
@@ -47,7 +48,8 @@ class MatchingPage extends React.Component {
     }
 
     handleLogout = async () => {
-        const res = await axios.delete(URL_USER_SVC+'/login', { username: this.props.username })
+        console.log('logout username: '+this.props.username);
+        const res = await axios.delete(URL_USER_SVC+'/login', { username: this.props.username, token: document.cookie })
             .catch((err) => {
                 this.setState(() => ({
                     dialogTitle: 'Logout',
