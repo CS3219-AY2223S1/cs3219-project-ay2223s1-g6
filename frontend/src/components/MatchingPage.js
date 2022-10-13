@@ -18,14 +18,14 @@ class MatchingPage extends React.Component {
         super(props);
         this.state = {
             isDialogOpen: false, 
-            dialogMsg: "", 
-            difficulty: "", 
+            dialogMsg: '', 
+            difficulty: 'none', 
             isSuccessful: false,
             socket: io(URL_MATCH_SVC)
         };
 
         this.state.socket.on('match success', (msg) => {
-            this.setState((state, props) => ({
+            this.setState(() => ({
                 dialogMsg: msg.message, 
                 isSuccessful: false, 
                 isDialogOpen: true
@@ -33,7 +33,7 @@ class MatchingPage extends React.Component {
             this.props.setQuestionID(msg.data.questionId);
         });
         this.state.socket.on('match failure', (msg) => {
-            this.setState((state, props) => ({
+            this.setState(() => ({
                 dialogMsg: msg.message, 
                 isSuccessful: false, 
                 isDialogOpen: true
@@ -42,10 +42,10 @@ class MatchingPage extends React.Component {
     }
 
     handleMatch = () => {
-        this.setState((state, props) => ({
+        this.setState(() => ({
             isSuccessful: false
         }));
-        this.state.socket.emit("new match", { 
+        this.state.socket.emit('new match', {
             token: document.cookie, 
             username: this.props.username, 
             difficultyLevel: this.state.difficulty 
@@ -53,27 +53,27 @@ class MatchingPage extends React.Component {
     }
     
     handleEasyMatch = () => {
-        this.setState((state, props) => ({
-            difficulty: 'easy'
-        }));
-        this.handleMatch();
+        this.setState(
+            () => ({difficulty: 'easy'}), 
+            () => { this.handleMatch(); }
+        );
     }
 
     handleMedMatch = () => {
-        this.setState((state, props) => ({
-            difficulty: 'medium' 
-        }));
-        this.handleMatch();
+        this.setState(
+            () => ({difficulty: 'medium'}), 
+            () => { this.handleMatch(); }
+        );
     }
 
     handleDifMatch = () => {
-        this.setState((state, props) => ({
-            difficulty: 'hard' 
-        }));
-        this.handleMatch();
+        this.setState(
+            () => ({difficulty: 'hard'}), 
+            () => { this.handleMatch(); }
+        );
     }
 
-    closeDialog = () => this.setState((state, props) => ({
+    closeDialog = () => this.setState(() => ({
         isDialogOpen: false
     }));
 
