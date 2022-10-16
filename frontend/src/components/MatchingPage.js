@@ -26,10 +26,14 @@ class MyMatchingPage extends React.Component {
             dialogMsg: '', 
             difficulty: 'none', 
             isSuccessful: false,
+            isTimerOpen: false, 
+            timer: 30, 
+            intervalId: 0, 
             socket: io(URL_MATCH_SVC)
         };
 
         this.state.socket.on('match success', (msg) => {
+            this.closeTimer();
             this.setState(() => ({
                 dialogTitle: 'Match',
                 dialogMsg: msg.message, 
@@ -40,6 +44,7 @@ class MyMatchingPage extends React.Component {
             this.props.navigate('/room');
         });
         this.state.socket.on('match failure', (msg) => {
+            this.closeTimer();
             this.setState(() => ({
                 dialogTitle: 'Match',
                 dialogMsg: msg.message, 
@@ -51,7 +56,7 @@ class MyMatchingPage extends React.Component {
 
     handleLogout = async () => {
         console.log('logout username: '+this.props.username);
-        const res = await axios.delete(URL_USER_SVC+'/login', { username: this.props.username, token: document.cookie })
+        const res = await axios.delete(URL_USER_SVC+'/login', { username: this.props.username }, { withCredentials: true })
             .catch((err) => {
                 this.setState(() => ({
                     dialogTitle: 'Logout',
@@ -80,6 +85,7 @@ class MyMatchingPage extends React.Component {
             username: Cookies.get('username'),
             difficultyLevel: this.state.difficulty
         });
+        this.startTimer();
     }
     
     handleEasyMatch = () => {
@@ -109,6 +115,32 @@ class MyMatchingPage extends React.Component {
     closeDialog = () => this.setState(() => ({
         isDialogOpen: false
     }));
+
+    startTimer = () => {
+        const newIntervalID = setInterval(() => {
+            if (this.state.timer > 1) {
+                this.setState((prev) => ({
+                    timer: prev.timer - 1
+                }));
+            } else {
+                this.closeTimer();
+            }
+        }, 1000);
+        this.setState(() => ({
+            isTimerOpen: true, 
+            timer: 30, 
+            intervalId: newIntervalID
+        }));
+    }
+
+    closeTimer = () => {
+        clearInterval(this.state.intervalId);
+        this.setState(() => ({
+            isTimerOpen: false, 
+            timer: 30, 
+            intervalId: 0
+        }));
+    };
 
     render() {
         return (
@@ -140,6 +172,11 @@ class MyMatchingPage extends React.Component {
                     }
                 </DialogActions>
             </Dialog>
+
+            {this.state.isTimerOpen
+                ? <Typography variant={"h1"} marginTop={"2rem"}>{this.state.timer}</Typography>
+                : <div></div>
+            }
         </Box>
         )
     }

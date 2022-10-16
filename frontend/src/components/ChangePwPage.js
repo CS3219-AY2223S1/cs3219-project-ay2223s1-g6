@@ -25,7 +25,7 @@ function ChangePwPage(props) {
 
     const handleChangePw = async () => {
         setIsSuccessful(false);
-        const res = await axios.put(URL_USER_SVC+'/account', { username: username, newPassword: password, token: document.cookie })
+        const res = await axios.put(URL_USER_SVC+'/account', { username: username, newPassword: password }, { withCredentials: true })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
             })
