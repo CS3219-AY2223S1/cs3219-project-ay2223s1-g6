@@ -16,9 +16,9 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import { URL_MATCH_SVC, URL_QUESTION_SVC } from '../configs';
 import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-class RoomPage extends React.Component {
+class MyRoomPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -49,6 +49,7 @@ class RoomPage extends React.Component {
         });
         this.state.socket.on('room closing', (msg) => {
             console.log(msg.message);
+            this.props.navigate('/match')
         });
         this.state.socket.emit('enter room', {
             token: Cookies.get('auth'),
@@ -62,7 +63,7 @@ class RoomPage extends React.Component {
             console.log('cannot load question');
         })
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            this.setState((state, props) => ({
+            this.setState(() => ({
                 title: res.data.question.question_title,
                 description: res.data.question.question_description,
                 examples: res.data.question.question_examples
@@ -112,4 +113,7 @@ class RoomPage extends React.Component {
     }
 }
 
-export default RoomPage;
+export default function RoomPage(props) {
+    const navigate = useNavigate();
+    return <MyRoomPage {...props} navigate={navigate}/>;
+}

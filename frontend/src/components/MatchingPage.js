@@ -67,6 +67,8 @@ class MyMatchingPage extends React.Component {
             });
         if (res && res.status === STATUS_CODE_SUCCESS) {
             this.props.setUsername('');
+            Cookies.set('username', '');
+            Cookies.set('auth', '');
             this.setState(() => ({
                 dialogTitle: 'Logout',
                 dialogMsg: res.data.message, 

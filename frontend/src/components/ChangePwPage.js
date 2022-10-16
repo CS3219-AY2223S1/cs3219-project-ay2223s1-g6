@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
+import Cookies from 'js-cookie';
 import { URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
 import { Link } from "react-router-dom";
@@ -33,6 +34,8 @@ function ChangePwPage(props) {
             setDialogMsg(res.data.message);
             setIsSuccessful(true);
             setUsername('');
+            Cookies.set('username', '');
+            Cookies.set('auth', '');
         }
         setIsDialogOpen(true);
     }
