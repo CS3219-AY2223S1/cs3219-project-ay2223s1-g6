@@ -22,6 +22,7 @@ class MyRoomPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoggedIn: false, 
             title: "Sample Question Title",
             description: "Sample question description", 
             examples: [
@@ -58,16 +59,26 @@ class MyRoomPage extends React.Component {
     }
 
     async componentDidMount() {
-        const res = await axios.get(`${URL_QUESTION_SVC}/${this.props.questionID}`)
-        .catch((err) => {
-            console.log('cannot load question');
-        })
-        if (res && res.status === STATUS_CODE_SUCCESS) {
+        this.setState(() => ({
+            isLoggedIn: false
+        }));
+        if (Cookies.get('username') && Cookies.get('auth')) {
             this.setState(() => ({
-                title: res.data.question.question_title,
-                description: res.data.question.question_description,
-                examples: res.data.question.question_examples
+                isLoggedIn: true
             }));
+            const res = await axios.get(`${URL_QUESTION_SVC}/${this.props.questionID}`)
+                .catch((err) => {
+                    console.log('cannot load question');
+                });
+            if (res && res.status === STATUS_CODE_SUCCESS) {
+                this.setState(() => ({
+                    title: res.data.question.question_title,
+                    description: res.data.question.question_description,
+                    examples: res.data.question.question_examples
+                }));
+            }
+        } else {
+            console.log('Cannot find username and token in cookie.')
         }
     }
 
@@ -79,37 +90,41 @@ class MyRoomPage extends React.Component {
     }
 
     render() {
-        return (
-            <Box display={"flex"} flexDirection={"column"}>
-                <Typography variant={"h3"} marginBottom={"2rem"}>This is your room</Typography>
-                <Box display={"flex"} flexDirection={"row"}>
-                    <Button variant={"outlined"} component={Link} to="/updateacc">Change Password</Button>
-                    <Button variant={"outlined"} onClick={this.handleLeaveRoom}>Leave Room</Button>
+        if (this.state.isLoggedIn) {
+            return (
+                <Box display={"flex"} flexDirection={"column"}>
+                    <Typography variant={"h3"} marginBottom={"2rem"}>This is your room</Typography>
+                    <Box display={"flex"} flexDirection={"row"}>
+                        <Button variant={"outlined"} component={Link} to="/updateacc">Change Password</Button>
+                        <Button variant={"outlined"} onClick={this.handleLeaveRoom}>Leave Room</Button>
+                    </Box>
+                    <Typography variant={"h4"} marginBottom={"2rem"}>{this.state.title}</Typography>
+                    <Typography variant={"h5"} marginBottom={"2rem"}>{this.state.description}</Typography>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Input</TableCell>
+                              <TableCell>Output</TableCell>
+                              <TableCell>Explanation</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {this.state.examples.map((example) => (
+                              <TableRow key={example._id}>
+                                <TableCell>{example.example_input}</TableCell>
+                                <TableCell>{example.example_output}</TableCell>
+                                <TableCell>{example.example_explanation}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Box>
-                <Typography variant={"h4"} marginBottom={"2rem"}>{this.state.title}</Typography>
-                <Typography variant={"h5"} marginBottom={"2rem"}>{this.state.description}</Typography>
-                <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Input</TableCell>
-                          <TableCell>Output</TableCell>
-                          <TableCell>Explanation</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {this.state.examples.map((example) => (
-                          <TableRow key={example._id}>
-                            <TableCell>{example.example_input}</TableCell>
-                            <TableCell>{example.example_output}</TableCell>
-                            <TableCell>{example.example_explanation}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                </TableContainer>
-            </Box>
-        )
+            )
+        } else {
+            return (<div>You cannot access this page if you did not log in.</div>);
+        }
     }
 }
 

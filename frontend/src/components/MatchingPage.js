@@ -19,8 +19,8 @@ import { Link, useNavigate } from 'react-router-dom';
 class MyMatchingPage extends React.Component {
     constructor(props) {
         super(props);
-        console.log('matching props: '+this.props.username);
         this.state = {
+            isLoggedIn: false, 
             isDialogOpen: false, 
             dialogTitle: '',
             dialogMsg: '', 
@@ -52,6 +52,19 @@ class MyMatchingPage extends React.Component {
                 isDialogOpen: true
             }));
         });
+    }
+
+    componentDidMount() {
+        this.setState(() => ({
+            isLoggedIn: false
+        }));
+        if (Cookies.get('username') && Cookies.get('auth')) {
+            this.setState(() => ({
+                isLoggedIn: true
+            }));
+        } else {
+            console.log('Cannot find username and token in cookie.')
+        }
     }
 
     handleLogout = async () => {
@@ -145,42 +158,46 @@ class MyMatchingPage extends React.Component {
     };
 
     render() {
-        return (
-        <Box display={"flex"} flexDirection={"column"}>
-            <Typography variant={"h3"} marginBottom={"2rem"}>Match with a Friend!</Typography>
-            <Box display={"flex"} flexDirection={"row"}>
-                <Button variant={"outlined"} onClick={this.handleLogout}>Log out</Button>
-                <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoDelAcc}>Delete Account</Button>
-                <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoChgPw}>Change Password</Button>
-            </Box>
-            <Box display={"flex"} flexDirection={"row"}>
-                <Button variant={"outlined"} onClick={this.handleEasyMatch}>Match - Easy</Button>
-                <Button variant={"outlined"} onClick={this.handleMedMatch}>Match - Medium</Button>
-                <Button variant={"outlined"} onClick={this.handleDifMatch}>Match - Hard</Button>
-            </Box>
-
-            <Dialog
-                open={this.state.isDialogOpen}
-                onClose={this.closeDialog}
-            >
-                <DialogTitle>Match</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>{this.state.dialogMsg}</DialogContentText>
-                </DialogContent>
-                <DialogActions> 
-                    {this.state.isSuccessful
-                        ? <Button component={Link} to="/room">Proceed to Room</Button>
-                        : <Button onClick={this.closeDialog}>Done</Button>
+        if (this.state.isLoggedIn) {
+            return (
+                <Box display={"flex"} flexDirection={"column"}>
+                    <Typography variant={"h3"} marginBottom={"2rem"}>Match with a Friend!</Typography>
+                    <Box display={"flex"} flexDirection={"row"}>
+                        <Button variant={"outlined"} onClick={this.handleLogout}>Log out</Button>
+                        <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoDelAcc}>Delete Account</Button>
+                        <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoChgPw}>Change Password</Button>
+                    </Box>
+                    <Box display={"flex"} flexDirection={"row"}>
+                        <Button variant={"outlined"} onClick={this.handleEasyMatch}>Match - Easy</Button>
+                        <Button variant={"outlined"} onClick={this.handleMedMatch}>Match - Medium</Button>
+                        <Button variant={"outlined"} onClick={this.handleDifMatch}>Match - Hard</Button>
+                    </Box>
+                
+                    <Dialog
+                        open={this.state.isDialogOpen}
+                        onClose={this.closeDialog}
+                    >
+                        <DialogTitle>Match</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>{this.state.dialogMsg}</DialogContentText>
+                        </DialogContent>
+                        <DialogActions> 
+                            {this.state.isSuccessful
+                                ? <Button component={Link} to="/room">Proceed to Room</Button>
+                                : <Button onClick={this.closeDialog}>Done</Button>
+                            }
+                        </DialogActions>
+                    </Dialog>
+                        
+                    {this.state.isTimerOpen
+                        ? <Typography variant={"h1"} marginTop={"2rem"}>{this.state.timer}</Typography>
+                        : <div></div>
                     }
-                </DialogActions>
-            </Dialog>
-
-            {this.state.isTimerOpen
-                ? <Typography variant={"h1"} marginTop={"2rem"}>{this.state.timer}</Typography>
-                : <div></div>
-            }
-        </Box>
-        )
+                </Box>
+            )
+        } else {
+            return (<div>You cannot access this page if you did not log in.</div>);
+        }
     }
 }
 
