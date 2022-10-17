@@ -68,8 +68,14 @@ class MyMatchingPage extends React.Component {
     }
 
     handleLogout = async () => {
-        console.log('logout username: '+this.props.username);
-        const res = await axios.delete(URL_USER_SVC+'/login', { username: this.props.username }, { withCredentials: true })
+        // TODO: Note (delete later) do not user props because it's not there if the page is refreshed
+        const username = Cookies.get('username');
+        console.log('logout username: ' + username);
+        const res = await axios.delete(URL_USER_SVC + '/login', {
+            data: { username },
+            withCredentials: true,
+            // TODO: Delete should not contain any body, the backend is bad
+        })
             .catch((err) => {
                 this.setState(() => ({
                     dialogTitle: 'Logout',
@@ -79,15 +85,17 @@ class MyMatchingPage extends React.Component {
                 }));
             });
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            this.props.setUsername('');
-            Cookies.set('username', '');
-            Cookies.set('auth', '');
+            // this.props.setUsername('');
+            // TODO: Backend should be able to clear auth
+            Cookies.remove('username');
+            Cookies.remove('auth');
             this.setState(() => ({
                 dialogTitle: 'Logout',
                 dialogMsg: res.data.message, 
                 isSuccessful: false, 
                 isDialogOpen: true
             }));
+            this.props.navigate('/login');
         }
     }
 

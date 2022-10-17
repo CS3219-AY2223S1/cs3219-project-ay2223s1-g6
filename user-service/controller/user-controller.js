@@ -118,6 +118,7 @@ export async function userLogout(req, res) {
             }
         } else {
             console.log('Username missing.');
+            // TODO: should return an error
             return;
         }
 
