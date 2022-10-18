@@ -90,6 +90,7 @@ export async function userLogin(req, res) {
                 //return res.redirect('/api/matching')
                 return res.status(201).json({ message: `User ${username} logged in successfully!` });
             } else {
+                // TODO: should return correct status code, e.g., wrong username/password is not bad request
                 return res.status(400).json({ message: `Login failed for user ${username}!` });
             }
         } else {
