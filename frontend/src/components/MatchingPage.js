@@ -132,8 +132,8 @@ class MyMatchingPage extends React.Component {
         );
     }
 
-    gotoChgPw = () => this.props.setMode('changePw');
-    gotoDelAcc = () => this.props.setMode('deleteAcc');
+    // gotoChgPw = () => this.props.setMode('changePw');
+    // gotoDelAcc = () => this.props.setMode('deleteAcc');
 
     closeDialog = () => this.setState(() => ({
         isDialogOpen: false
@@ -172,8 +172,8 @@ class MyMatchingPage extends React.Component {
                     <Typography variant={"h3"} marginBottom={"2rem"}>Match with a Friend!</Typography>
                     <Box display={"flex"} flexDirection={"row"}>
                         <Button variant={"outlined"} onClick={this.handleLogout}>Log out</Button>
-                        <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoDelAcc}>Delete Account</Button>
-                        <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoChgPw}>Change Password</Button>
+                        <Button variant={"outlined"} component={Link} to="/delete-account">Delete Account</Button>
+                        <Button variant={"outlined"} component={Link} to="/change-password">Change Password</Button>
                     </Box>
                     <Box display={"flex"} flexDirection={"row"}>
                         <Button variant={"outlined"} onClick={this.handleEasyMatch}>Match - Easy</Button>

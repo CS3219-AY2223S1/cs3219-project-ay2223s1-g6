@@ -14,7 +14,7 @@ import axios from "axios";
 import Cookies from 'js-cookie';
 import { URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
 function ChangePwPage(props) {
     const {username, setUsername} = props;
@@ -23,6 +23,8 @@ function ChangePwPage(props) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState('');
     const [isSuccessful, setIsSuccessful] = useState(false);
+
+    const navigate = useNavigate();
 
     const handleChangePw = async () => {
         setIsSuccessful(false);
@@ -33,9 +35,10 @@ function ChangePwPage(props) {
         if (res && res.status === STATUS_CODE_SUCCESS) {
             setDialogMsg(res.data.message);
             setIsSuccessful(true);
-            setUsername('');
-            Cookies.set('username', '');
-            Cookies.set('auth', '');
+            // setUsername('');
+            // Cookies.set('username', '');
+            // Cookies.set('auth', '');
+            navigate('/match');
         }
         setIsDialogOpen(true);
     }
@@ -46,7 +49,7 @@ function ChangePwPage(props) {
         <Box display={"flex"} flexDirection={"column"} width={"30%"}>
             <Typography variant={"h3"} marginBottom={"2rem"}>Change Password</Typography>
             <TextField
-                label="Password"
+                label="New Password"
                 variant="standard"
                 type="password"
                 value={password}

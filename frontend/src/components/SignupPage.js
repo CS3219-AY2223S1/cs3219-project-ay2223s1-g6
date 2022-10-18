@@ -64,8 +64,10 @@ function SignupPage(props) {
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{marginBottom: "2rem"}}
             />
-            <Box display={"flex"} flexDirection={"row"} justifyContent={"flex-end"}>
+            <Box display={"flex"} flexDirection={"column"} justifyContent={"space-around"}>
                 <Button variant={"outlined"} onClick={handleSignup}>Sign up</Button>
+                <br/>
+                <Button color="secondary" component={Link} to="/login">Have an account? Go to login</Button>
             </Box>
 
             <Dialog

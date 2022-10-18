@@ -42,8 +42,6 @@ function LoginPage(props) {
         setIsDialogOpen(true);
     }
 
-    const gotoSignup = () => setMode('signUp');
-
     const closeDialog = () => setIsDialogOpen(false);
 
     return (
@@ -65,9 +63,10 @@ function LoginPage(props) {
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{marginBottom: "2rem"}}
             />
-            <Box display={"flex"} flexDirection={"row"} justifyContent={"space-around"}>
-                <Button variant={"outlined"} component={Link} to="/account" onClick={gotoSignup}>Signup</Button>
+            <Box display={"flex"} flexDirection={"column"} justifyContent={"space-around"}>
                 <Button variant={"outlined"} onClick={handleLogin}>Log in</Button>
+                <br/>
+                <Button color="secondary" component={Link} to="/signup">Sign up for a new account</Button>
             </Box>
 
             <Dialog

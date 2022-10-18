@@ -12,7 +12,7 @@ import axios from "axios";
 import Cookies from 'js-cookie';
 import { URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
 function DeleteAccPage(props) {
     const {username, setUsername} = props;
@@ -20,6 +20,8 @@ function DeleteAccPage(props) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState("");
     const [isSuccessful, setIsSuccessful] = useState(false);
+
+    const navigate = useNavigate();
 
     const handleDelAcc = async () => {
         setIsSuccessful(false);
@@ -33,6 +35,7 @@ function DeleteAccPage(props) {
             setUsername('');
             Cookies.set('username', '');
             Cookies.set('auth', '');
+            navigate('/login');
         }
         setIsDialogOpen(true);
     }
