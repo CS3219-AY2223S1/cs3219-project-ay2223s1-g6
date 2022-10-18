@@ -68,7 +68,7 @@ class MyMatchingPage extends React.Component {
     }
 
     handleLogout = async () => {
-        // TODO: Note (delete later) do not user props because it's not there if the page is refreshed
+        // TODO: Note (delete later) do not use props because it's not there if the page is refreshed
         const username = Cookies.get('username');
         console.log('logout username: ' + username);
         const res = await axios.delete(URL_USER_SVC + '/login', {
