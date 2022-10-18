@@ -95,8 +95,7 @@ class MyRoomPage extends React.Component {
                 <Box display={"flex"} flexDirection={"column"}>
                     <Typography variant={"h3"} marginBottom={"2rem"}>This is your room</Typography>
                     <Box display={"flex"} flexDirection={"row"}>
-                        <Button variant={"outlined"} component={Link} to="/updateacc">Change Password</Button>
-                        <Button variant={"outlined"} onClick={this.handleLeaveRoom}>Leave Room</Button>
+                        <Button color={"warning"} variant={"contained"} onClick={this.handleLeaveRoom}>End session</Button>
                     </Box>
                     <Typography variant={"h4"} marginBottom={"2rem"}>{this.state.title}</Typography>
                     <Typography variant={"h5"} marginBottom={"2rem"}>{this.state.description}</Typography>
