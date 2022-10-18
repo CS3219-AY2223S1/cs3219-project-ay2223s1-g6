@@ -9,9 +9,10 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
+import Cookies from 'js-cookie';
 import { URL_USER_SVC } from "../configs";
 import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 
 function DeleteAccPage(props) {
     const {username, setUsername} = props;
@@ -20,25 +21,40 @@ function DeleteAccPage(props) {
     const [dialogMsg, setDialogMsg] = useState("");
     const [isSuccessful, setIsSuccessful] = useState(false);
 
+    const navigate = useNavigate();
+
     const handleDelAcc = async () => {
         setIsSuccessful(false);
-        const res = await axios.delete(URL_USER_SVC+'/account', { username: username, token: document.cookie })
+        const username = Cookies.get('username');
+        const res = await axios.delete(URL_USER_SVC+'/account', {
+            // TODO: Delete should not have body, bad backend
+            data: {
+                username
+            },
+            withCredentials: true,
+        })
             .catch((err) => {
-                setDialogMsg(err.response.data.message);
-            })
+                setDialogMsg('Delete account is not successful.');
+                setIsDialogOpen(true);
+                setIsSuccessful(false);
+            });
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            setDialogMsg(res.data.message);
-            setIsSuccessful(true);
-            setUsername('');
+            // setDialogMsg(res.data.message);
+            // setIsSuccessful(true);
+            // setUsername('');
+            Cookies.remove('username');
+            Cookies.remove('auth');
+
+            // TODO: Should navigate with a success message instead of dialog
+            navigate('/login');
         }
-        setIsDialogOpen(true);
     }
 
     const closeDialog = () => setIsDialogOpen(false);
 
     return (
         <Box display={"flex"} flexDirection={"column"} width={"30%"}>
-            <Button variant={"outlined"} onClick={handleDelAcc}>Delete Account</Button>
+            <Button color={"warning"} variant={"outlined"} onClick={handleDelAcc}>Delete Account</Button>
 
             <Dialog
                 open={isDialogOpen}

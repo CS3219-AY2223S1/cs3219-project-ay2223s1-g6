@@ -19,17 +19,21 @@ import { Link, useNavigate } from 'react-router-dom';
 class MyMatchingPage extends React.Component {
     constructor(props) {
         super(props);
-        console.log('matching props: '+this.props.username);
         this.state = {
+            isLoggedIn: false, 
             isDialogOpen: false, 
             dialogTitle: '',
             dialogMsg: '', 
             difficulty: 'none', 
             isSuccessful: false,
+            isTimerOpen: false, 
+            timer: 30, 
+            intervalId: 0, 
             socket: io(URL_MATCH_SVC)
         };
 
         this.state.socket.on('match success', (msg) => {
+            this.closeTimer();
             this.setState(() => ({
                 dialogTitle: 'Match',
                 dialogMsg: msg.message, 
@@ -40,6 +44,7 @@ class MyMatchingPage extends React.Component {
             this.props.navigate('/room');
         });
         this.state.socket.on('match failure', (msg) => {
+            this.closeTimer();
             this.setState(() => ({
                 dialogTitle: 'Match',
                 dialogMsg: msg.message, 
@@ -49,9 +54,28 @@ class MyMatchingPage extends React.Component {
         });
     }
 
+    componentDidMount() {
+        this.setState(() => ({
+            isLoggedIn: false
+        }));
+        if (Cookies.get('username') && Cookies.get('auth')) {
+            this.setState(() => ({
+                isLoggedIn: true
+            }));
+        } else {
+            console.log('Cannot find username and token in cookie.')
+        }
+    }
+
     handleLogout = async () => {
-        console.log('logout username: '+this.props.username);
-        const res = await axios.delete(URL_USER_SVC+'/login', { username: this.props.username, token: document.cookie })
+        // TODO: Note (delete later) do not use props because it's not there if the page is refreshed
+        const username = Cookies.get('username');
+        console.log('logout username: ' + username);
+        const res = await axios.delete(URL_USER_SVC + '/login', {
+            data: { username },
+            withCredentials: true,
+            // TODO: Delete should not contain any body, the backend is bad
+        })
             .catch((err) => {
                 this.setState(() => ({
                     dialogTitle: 'Logout',
@@ -61,13 +85,17 @@ class MyMatchingPage extends React.Component {
                 }));
             });
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            this.props.setUsername('');
+            // this.props.setUsername('');
+            // TODO: Backend should be able to clear auth
+            Cookies.remove('username');
+            Cookies.remove('auth');
             this.setState(() => ({
                 dialogTitle: 'Logout',
                 dialogMsg: res.data.message, 
                 isSuccessful: false, 
                 isDialogOpen: true
             }));
+            this.props.navigate('/login');
         }
     }
 
@@ -80,6 +108,7 @@ class MyMatchingPage extends React.Component {
             username: Cookies.get('username'),
             difficultyLevel: this.state.difficulty
         });
+        this.startTimer();
     }
     
     handleEasyMatch = () => {
@@ -103,45 +132,80 @@ class MyMatchingPage extends React.Component {
         );
     }
 
-    gotoChgPw = () => this.props.setMode('changePw');
-    gotoDelAcc = () => this.props.setMode('deleteAcc');
+    // gotoChgPw = () => this.props.setMode('changePw');
+    // gotoDelAcc = () => this.props.setMode('deleteAcc');
 
     closeDialog = () => this.setState(() => ({
         isDialogOpen: false
     }));
 
-    render() {
-        return (
-        <Box display={"flex"} flexDirection={"column"}>
-            <Typography variant={"h3"} marginBottom={"2rem"}>Match with a Friend!</Typography>
-            <Box display={"flex"} flexDirection={"row"}>
-                <Button variant={"outlined"} onClick={this.handleLogout}>Log out</Button>
-                <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoDelAcc}>Delete Account</Button>
-                <Button variant={"outlined"} component={Link} to="/account" onClick={this.gotoChgPw}>Change Password</Button>
-            </Box>
-            <Box display={"flex"} flexDirection={"row"}>
-                <Button variant={"outlined"} onClick={this.handleEasyMatch}>Match - Easy</Button>
-                <Button variant={"outlined"} onClick={this.handleMedMatch}>Match - Medium</Button>
-                <Button variant={"outlined"} onClick={this.handleDifMatch}>Match - Hard</Button>
-            </Box>
+    startTimer = () => {
+        const newIntervalID = setInterval(() => {
+            if (this.state.timer > 1) {
+                this.setState((prev) => ({
+                    timer: prev.timer - 1
+                }));
+            } else {
+                this.closeTimer();
+            }
+        }, 1000);
+        this.setState(() => ({
+            isTimerOpen: true, 
+            timer: 30, 
+            intervalId: newIntervalID
+        }));
+    }
 
-            <Dialog
-                open={this.state.isDialogOpen}
-                onClose={this.closeDialog}
-            >
-                <DialogTitle>Match</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>{this.state.dialogMsg}</DialogContentText>
-                </DialogContent>
-                <DialogActions> 
-                    {this.state.isSuccessful
-                        ? <Button component={Link} to="/room">Proceed to Room</Button>
-                        : <Button onClick={this.closeDialog}>Done</Button>
+    closeTimer = () => {
+        clearInterval(this.state.intervalId);
+        this.setState(() => ({
+            isTimerOpen: false, 
+            timer: 30, 
+            intervalId: 0
+        }));
+    };
+
+    render() {
+        if (this.state.isLoggedIn) {
+            return (
+                <Box display={"flex"} flexDirection={"column"}>
+                    <Typography variant={"h3"} marginBottom={"2rem"}>Match with a Friend!</Typography>
+                    <Box display={"flex"} flexDirection={"row"}>
+                        <Button variant={"outlined"} onClick={this.handleLogout}>Log out</Button>
+                        <Button variant={"outlined"} component={Link} to="/delete-account">Delete Account</Button>
+                        <Button variant={"outlined"} component={Link} to="/change-password">Change Password</Button>
+                    </Box>
+                    <Box display={"flex"} flexDirection={"row"}>
+                        <Button variant={"outlined"} onClick={this.handleEasyMatch}>Match - Easy</Button>
+                        <Button variant={"outlined"} onClick={this.handleMedMatch}>Match - Medium</Button>
+                        <Button variant={"outlined"} onClick={this.handleDifMatch}>Match - Hard</Button>
+                    </Box>
+                
+                    <Dialog
+                        open={this.state.isDialogOpen}
+                        onClose={this.closeDialog}
+                    >
+                        <DialogTitle>Match</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>{this.state.dialogMsg}</DialogContentText>
+                        </DialogContent>
+                        <DialogActions> 
+                            {this.state.isSuccessful
+                                ? <Button component={Link} to="/room">Proceed to Room</Button>
+                                : <Button onClick={this.closeDialog}>Done</Button>
+                            }
+                        </DialogActions>
+                    </Dialog>
+                        
+                    {this.state.isTimerOpen
+                        ? <Typography variant={"h1"} marginTop={"2rem"}>{this.state.timer}</Typography>
+                        : <div></div>
                     }
-                </DialogActions>
-            </Dialog>
-        </Box>
-        )
+                </Box>
+            )
+        } else {
+            return (<div>You cannot access this page if you did not log in.</div>);
+        }
     }
 }
 
