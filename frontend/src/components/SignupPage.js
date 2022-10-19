@@ -7,14 +7,14 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    Typography
-} from "@mui/material";
+    Typography,
+} from '@mui/material';
+import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useState } from "react";
-import axios from "axios";
-import { URL_USER_SVC } from "../configs";
-import { STATUS_CODE_SUCCESS } from "../constants";
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { URL_USER_SVC } from '../configs';
+import { STATUS_CODE_SUCCESS } from '../constants';
 
 function SignupPage(props) {
     const {setUsername} = props;
@@ -38,7 +38,7 @@ function SignupPage(props) {
             setIsSuccessful(true);
             setUsername(tempUsername);
             Cookies.set('username', tempUsername);
-            navigate('/match');
+            navigate('/match', { replace: true });
         }
         setIsDialogOpen(true);
     }

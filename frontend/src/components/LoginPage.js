@@ -7,17 +7,17 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    Typography
-} from "@mui/material";
-import { useState } from "react";
-import axios from "axios";
+    Typography,
+} from '@mui/material';
+import axios from 'axios';
 import Cookies from 'js-cookie';
-import { URL_USER_SVC } from "../configs";
-import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { URL_USER_SVC } from '../configs';
+import { STATUS_CODE_SUCCESS } from '../constants';
 
 function LoginPage(props) {
-    const {setUsername, setMode} = props;
+    const { setUsername, setMode } = props;
     const [tempUsername, setTempUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -30,16 +30,16 @@ function LoginPage(props) {
         setIsSuccessful(false);
         const res = await axios.post(URL_USER_SVC+'/login', { username: tempUsername, password: password }, { withCredentials: true })
             .catch((err) => {
-                setDialogMsg(err.response.data.message);
+            setDialogMsg(err.response.data.message);
+            setIsDialogOpen(true);
             })
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            setDialogMsg(res.data.message);
-            setIsSuccessful(true);
-            setUsername(tempUsername);
+            // setDialogMsg(res.data.message);
+            // setIsSuccessful(true);
+            // setUsername(tempUsername);
             Cookies.set('username', tempUsername);
-            navigate('/match');
+            navigate('/match', { replace: true });
         }
-        setIsDialogOpen(true);
     }
 
     const closeDialog = () => setIsDialogOpen(false);
