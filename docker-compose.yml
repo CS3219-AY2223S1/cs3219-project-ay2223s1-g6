@@ -1,0 +1,85 @@
+version: "3.8"
+services:
+    frontend:
+        container_name: pp-frontend
+        restart: always
+        build:
+            context: ./frontend
+        ports:
+            - "3000:3000"
+        networks:
+            - pp-g6
+    user-service:
+        container_name: pp-user-service
+        build:
+            context: ./user-service
+        ports:
+            - "8000:8000"
+        networks:
+            - pp-g6
+            - pp-user-service-network
+        depends_on:
+            user-service-mongo:
+                condition: service_started
+            user-service-redis:
+                condition: service_started
+    user-service-mongo:
+        container_name: pp-user-service-mongo
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        networks:
+            - pp-user-service-network
+    user-service-redis:
+        container_name: pp-user-service-redis
+        image: redis:latest
+        ports:
+            - "6379:6379"
+        command: redis-server --bind 0.0.0.0 --protected-mode no
+        networks:
+            - pp-user-service-network
+    matching-service:
+        container_name: pp-matching-service
+        build:
+            context: ./matching-service
+        ports:
+            - "8001:8001"
+        networks:
+            - pp-g6
+            - pp-matching-service-network
+        depends_on:
+            matching-service-pgsql:
+                condition: service_started
+    matching-service-pgsql:
+        container_name: pp-matching-service-pgsql
+        image: postgres:latest
+        environment:
+            - POSTGRES_PASSWORD=mysecretpassword
+        ports:
+            - "5432:5432"
+        networks:
+            - pp-matching-service-network
+        volumes:
+            - ./db/init.sql:/docker-entrypoint-initdb.d/create_db.sql
+    question-service:
+        container_name: pp-question-service
+        build:
+            context: ./question-service
+        ports:
+            - "8002:8002"
+        networks:
+            - pp-g6
+
+networks:
+    pp-g6:
+        name: pp-g6
+        driver: bridge
+    pp-user-service-network:
+        name: pp-user-service-network
+        driver: bridge
+    pp-matching-service-network:
+        name: pp-matching-service-network
+        driver: bridge
+
+volumes:
+    postgres:
