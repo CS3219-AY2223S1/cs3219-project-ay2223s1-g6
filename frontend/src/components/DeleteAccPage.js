@@ -1,27 +1,21 @@
-import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-} from "@mui/material";
-import { useState } from "react";
-import axios from "axios";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import axios from 'axios';
 import Cookies from 'js-cookie';
-import { URL_USER_SVC } from "../configs";
-import { STATUS_CODE_SUCCESS } from "../constants";
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { URL_USER_SVC } from '../configs';
+import { STATUS_CODE_SUCCESS } from '../constants';
+import { AuthContext } from './contexts/AuthContext';
 
 function DeleteAccPage(props) {
-    const {username, setUsername} = props;
-    
+    const { username, setUsername } = props;
+
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [dialogMsg, setDialogMsg] = useState("");
+    const [dialogMsg, setDialogMsg] = useState('');
     const [isSuccessful, setIsSuccessful] = useState(false);
 
     const navigate = useNavigate();
+    const authContext = useContext(AuthContext);
 
     const handleDelAcc = async () => {
         setIsSuccessful(false);
@@ -45,7 +39,8 @@ function DeleteAccPage(props) {
             Cookies.remove('username');
             Cookies.remove('auth');
 
-            // TODO: Should navigate with a success message instead of dialog
+            // TODO: toast
+            authContext.setLoggedIn(false);
             navigate('/login');
         }
     }

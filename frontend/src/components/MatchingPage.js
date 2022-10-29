@@ -10,11 +10,13 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { URL_MATCH_SVC, URL_USER_SVC } from '../configs';
 import { STATUS_CODE_SUCCESS } from '../constants';
+import { AuthContext } from './contexts/AuthContext';
+import { SessionContext } from './contexts/SessionContext';
 
 class MyMatchingPage extends React.Component {
     constructor(props) {
@@ -39,10 +41,11 @@ class MyMatchingPage extends React.Component {
                 isSuccessful: false,
                 isDialogOpen: true,
             }));
-            // TODO: Refine
-            this.props.setQuestionID(msg.data.questionId);
-            Cookies.set('room_id', msg.data.questionId);
-            this.props.navigate('/room', { replace: true });
+            // It is actually sufficient to pass questionId in props if the room page is not persistent on refresh
+            Cookies.set('question_id', msg.data.questionId);
+            // TODO: warn when leaving room page
+            this.props.sessionContext.setSessionActive(true);
+            this.props.navigate('/room');
         });
         this.state.socket.on('match failure', (msg) => {
             this.closeTimer();
@@ -83,7 +86,8 @@ class MyMatchingPage extends React.Component {
             // }));
             Cookies.remove('username');
             Cookies.remove('auth');
-            this.props.navigate('/login', { replace: true });
+            this.props.authContext.setLoggedIn(false);
+            this.props.navigate('/login');
         }
     }
 
@@ -194,6 +198,8 @@ class MyMatchingPage extends React.Component {
 }
 
 export default function MatchingPage(props) {
-  const navigate = useNavigate();
-  return <MyMatchingPage {...props} navigate={navigate}/>;
+    const navigate = useNavigate();
+    const authContext = useContext(AuthContext);
+    const sessionContext = useContext(SessionContext);
+    return <MyMatchingPage {...props} navigate={navigate} authContext={authContext} sessionContext={sessionContext}/>;
 }

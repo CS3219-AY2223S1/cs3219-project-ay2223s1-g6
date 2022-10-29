@@ -11,10 +11,11 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { URL_USER_SVC } from '../configs';
 import { STATUS_CODE_SUCCESS } from '../constants';
+import { AuthContext } from './contexts/AuthContext';
 
 function SignupPage(props) {
     const {setUsername} = props;
@@ -26,6 +27,7 @@ function SignupPage(props) {
     const [isSuccessful, setIsSuccessful] = useState(false);
 
     const navigate = useNavigate();
+    const authContext = useContext(AuthContext);
 
     const handleSignup = async () => {
         setIsSuccessful(false);
@@ -38,7 +40,8 @@ function SignupPage(props) {
             setIsSuccessful(true);
             setUsername(tempUsername);
             Cookies.set('username', tempUsername);
-            navigate('/match', { replace: true });
+            authContext.setLoggedIn(true);
+            navigate('/match');
         }
         setIsDialogOpen(true);
     }

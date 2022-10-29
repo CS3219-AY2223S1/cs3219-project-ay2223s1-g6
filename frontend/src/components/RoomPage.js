@@ -49,8 +49,10 @@ class MyRoomPage extends React.Component {
         });
         this.state.socket.on('room closing', (msg) => {
             console.log(msg.message);
-            Cookies.remove('room_id');
-            this.props.navigate('/match');
+            Cookies.remove('question_id');
+            // There's no need to set session context here as there's no way to go back to room page without refreshing
+            // sessionActive in session context is always initialized to false
+            this.props.navigate('/match', { replace: true });
         });
         this.state.socket.emit('enter room', {
             token: Cookies.get('auth'),
@@ -60,7 +62,7 @@ class MyRoomPage extends React.Component {
 
     async componentDidMount() {
         // TODO: Refine
-        const questionId = Cookies.get('room_id');
+        const questionId = Cookies.get('question_id');
         const res = await axios.get(`${URL_QUESTION_SVC}/${questionId}`).catch((err) => {
             console.log('cannot load question');
         });
