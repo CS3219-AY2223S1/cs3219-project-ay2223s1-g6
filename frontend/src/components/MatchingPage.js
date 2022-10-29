@@ -26,7 +26,6 @@ class MyMatchingPage extends React.Component {
             dialogTitle: '',
             dialogMsg: '',
             difficulty: 'none',
-            isSuccessful: false,
             isTimerOpen: false,
             timer: 30,
             intervalId: 0,
@@ -38,7 +37,6 @@ class MyMatchingPage extends React.Component {
             this.setState(() => ({
                 dialogTitle: 'Match',
                 dialogMsg: msg.message,
-                isSuccessful: false,
                 isDialogOpen: true,
             }));
             // It is actually sufficient to pass questionId in props if the room page is not persistent on refresh
@@ -51,15 +49,13 @@ class MyMatchingPage extends React.Component {
             this.closeTimer();
             this.setState(() => ({
                 dialogTitle: 'Match',
-                dialogMsg: msg.message, 
-                isSuccessful: false, 
-                isDialogOpen: true
+                dialogMsg: msg.message,
+                isDialogOpen: true,
             }));
         });
     }
 
     handleLogout = async () => {
-        // TODO: Note (delete later) do not use props because it's not there if the page is refreshed
         const username = Cookies.get('username');
         console.log('logout username: ' + username);
         const res = await axios.delete(URL_USER_SVC + '/login', {
@@ -70,20 +66,12 @@ class MyMatchingPage extends React.Component {
             .catch((err) => {
                 this.setState(() => ({
                     dialogTitle: 'Logout',
-                    dialogMsg: err.response.data.message, 
-                    isSuccessful: false, 
-                    isDialogOpen: true
+                    dialogMsg: err.response.data.message,
+                    isDialogOpen: true,
                 }));
             });
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            // this.props.setUsername('');
             // TODO: Backend should be able to clear auth
-            // this.setState(() => ({
-            //     dialogTitle: 'Logout',
-            //     dialogMsg: res.data.message,
-            //     isSuccessful: false,
-            //     isDialogOpen: true
-            // }));
             Cookies.remove('username');
             Cookies.remove('auth');
             this.props.authContext.setLoggedIn(false);
@@ -92,13 +80,10 @@ class MyMatchingPage extends React.Component {
     }
 
     handleMatch = () => {
-        this.setState(() => ({
-            isSuccessful: false
-        }));
         this.state.socket.emit('new match', {
             token: Cookies.get('auth'),
             username: Cookies.get('username'),
-            difficultyLevel: this.state.difficulty
+            difficultyLevel: this.state.difficulty,
         });
         this.startTimer();
     }
@@ -123,9 +108,6 @@ class MyMatchingPage extends React.Component {
             () => { this.handleMatch(); }
         );
     }
-
-    // gotoChgPw = () => this.props.setMode('changePw');
-    // gotoDelAcc = () => this.props.setMode('deleteAcc');
 
     closeDialog = () => this.setState(() => ({
         isDialogOpen: false
@@ -181,10 +163,7 @@ class MyMatchingPage extends React.Component {
                       <DialogContentText>{this.state.dialogMsg}</DialogContentText>
                   </DialogContent>
                   <DialogActions>
-                      {this.state.isSuccessful
-                        ? <Button component={Link} to="/room">Proceed to Room</Button>
-                        : <Button onClick={this.closeDialog}>Done</Button>
-                      }
+                      <Button onClick={this.closeDialog}>Close</Button>
                   </DialogActions>
               </Dialog>
 

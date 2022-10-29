@@ -2,43 +2,33 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { URL_USER_SVC } from '../configs';
 import { STATUS_CODE_SUCCESS } from '../constants';
 import { AuthContext } from './contexts/AuthContext';
 
-function DeleteAccPage(props) {
-    const { username, setUsername } = props;
-
+function DeleteAccPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState('');
-    const [isSuccessful, setIsSuccessful] = useState(false);
 
     const navigate = useNavigate();
     const authContext = useContext(AuthContext);
 
     const handleDelAcc = async () => {
-        setIsSuccessful(false);
         const username = Cookies.get('username');
-        const res = await axios.delete(URL_USER_SVC+'/account', {
+        const res = await axios.delete(URL_USER_SVC + '/account', {
             // TODO: Delete should not have body, bad backend
             data: {
-                username
+                username,
             },
             withCredentials: true,
-        })
-            .catch((err) => {
-                setDialogMsg('Delete account is not successful.');
-                setIsDialogOpen(true);
-                setIsSuccessful(false);
-            });
+        }).catch((err) => {
+            setDialogMsg(err);
+            setIsDialogOpen(true);
+        });
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            // setDialogMsg(res.data.message);
-            // setIsSuccessful(true);
-            // setUsername('');
             Cookies.remove('username');
             Cookies.remove('auth');
-
             // TODO: toast
             authContext.setLoggedIn(false);
             navigate('/login');
@@ -60,10 +50,7 @@ function DeleteAccPage(props) {
                     <DialogContentText>{dialogMsg}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    {isSuccessful
-                        ? <Button component={Link} to="/">Home</Button>
-                        : <Button onClick={closeDialog}>Done</Button>
-                    }
+                    <Button onClick={closeDialog}>Close</Button>
                 </DialogActions>
             </Dialog>
         </Box>

@@ -17,34 +17,27 @@ import { URL_USER_SVC } from '../configs';
 import { STATUS_CODE_SUCCESS } from '../constants';
 import { AuthContext } from './contexts/AuthContext';
 
-function SignupPage(props) {
-    const {setUsername} = props;
-    
-    const [tempUsername, setTempUsername] = useState("");
-    const [password, setPassword] = useState("");
+function SignupPage() {
+    const [tempUsername, setTempUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [dialogMsg, setDialogMsg] = useState("");
-    const [isSuccessful, setIsSuccessful] = useState(false);
+    const [dialogMsg, setDialogMsg] = useState('');
 
     const navigate = useNavigate();
     const authContext = useContext(AuthContext);
 
     const handleSignup = async () => {
-        setIsSuccessful(false);
-        const res = await axios.post(URL_USER_SVC+'/account', { username: tempUsername, password: password }, { withCredentials: true })
-            .catch((err) => {
-                setDialogMsg(err.response.data.message);
-            })
+        const res = await axios.post(URL_USER_SVC + '/account', { username: tempUsername, password: password },
+          { withCredentials: true }).catch((err) => {
+            setDialogMsg(err.response.data.message);
+            setIsDialogOpen(true);
+        });
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            setDialogMsg(res.data.message);
-            setIsSuccessful(true);
-            setUsername(tempUsername);
             Cookies.set('username', tempUsername);
             authContext.setLoggedIn(true);
             navigate('/match');
         }
-        setIsDialogOpen(true);
-    }
+    };
 
     const closeDialog = () => setIsDialogOpen(false);
 
@@ -82,10 +75,7 @@ function SignupPage(props) {
                     <DialogContentText>{dialogMsg}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    {isSuccessful
-                        ? <Button component={Link} to="/match">Proceed</Button>
-                        : <Button onClick={closeDialog}>Done</Button>
-                    }
+                    <Button onClick={closeDialog}>Close</Button>
                 </DialogActions>
             </Dialog>
         </Box>

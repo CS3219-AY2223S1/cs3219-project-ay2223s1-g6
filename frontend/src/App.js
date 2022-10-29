@@ -1,9 +1,8 @@
 import { Box } from '@mui/material';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AccountPage from './components/AccountPage';
 import ChangePwPage from './components/ChangePwPage';
 import { AuthContext } from './components/contexts/AuthContext';
 import { SessionContext } from './components/contexts/SessionContext';
@@ -13,12 +12,9 @@ import MatchingPage from './components/MatchingPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import { RedirectRoute } from './components/RedirectRoute';
 import RoomPage from './components/RoomPage';
+import SignupPage from './components/SignupPage';
 
 function App() {
-  const [username, setUsername] = useState('');
-  const [mode, setMode] = useState('signUp');
-  const [questionID, setQuestionID] = useState(0);
-
   const authContext = useContext(AuthContext);
   const sessionContext = useContext(SessionContext);
 
@@ -30,24 +26,18 @@ function App() {
             <Route exact path="/" element={<Navigate replace to="/login"/>}></Route>
             <Route element={<RedirectRoute shouldRedirect={authContext.loggedIn}/>}>
               <Route path="/login" element={<LoginPage/>}/>
-              <Route path="/signup"
-                     element={<AccountPage mode={mode} username={username} setUsername={setUsername}/>}/>
+              <Route path="/signup" element={<SignupPage/>}/>
             </Route>
             <Route element={<PrivateRoute isAllowed={authContext.loggedIn}
                                           redirectReason={'Login is required to access this page!'}/>}>
-              <Route path="/delete-account"
-                     element={<DeleteAccPage username={username} setUsername={setUsername}/>}/>
-              <Route path="/change-password"
-                     element={<ChangePwPage username={username} setUsername={setUsername}/>}/>
-              <Route path="/match"
-                     element={<MatchingPage username={username} setQuestionID={setQuestionID} setMode={setMode}/>}/>
-              <Route path="/room"
-                     element={
-                       <PrivateRoute isAllowed={sessionContext.sessionActive}
-                                     redirectPath={'/match'}
-                                     redirectReason={'A match is required to access this page!'}>
-                         <RoomPage username={username} questionID={questionID}/>
-                       </PrivateRoute>}
+              <Route path="/delete-account" element={<DeleteAccPage/>}/>
+              <Route path="/change-password" element={<ChangePwPage/>}/>
+              <Route path="/match" element={<MatchingPage/>}/>
+              <Route path="/room" element={<PrivateRoute isAllowed={sessionContext.sessionActive}
+                                                         redirectPath={'/match'}
+                                                         redirectReason={'A match is required to access this page!'}>
+                <RoomPage/>
+              </PrivateRoute>}
               />
             </Route>
             <Route path="*" element={<h1>There's nothing here!</h1>}/>

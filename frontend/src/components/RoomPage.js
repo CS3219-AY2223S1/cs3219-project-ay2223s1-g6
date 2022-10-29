@@ -61,10 +61,10 @@ class MyRoomPage extends React.Component {
     }
 
     async componentDidMount() {
-        // TODO: Refine
+        // TODO: Refine - add session_id, backend returns roomId as session_id
         const questionId = Cookies.get('question_id');
         const res = await axios.get(`${URL_QUESTION_SVC}/${questionId}`).catch((err) => {
-            console.log('cannot load question');
+            console.log('cannot load question', err);
         });
         if (res && res.status === STATUS_CODE_SUCCESS) {
             this.setState(() => ({

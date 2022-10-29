@@ -7,41 +7,31 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    Typography
-} from "@mui/material";
-import { useState } from "react";
-import axios from "axios";
+    Typography,
+} from '@mui/material';
+import axios from 'axios';
 import Cookies from 'js-cookie';
-import { URL_USER_SVC } from "../configs";
-import { STATUS_CODE_SUCCESS } from "../constants";
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { URL_USER_SVC } from '../configs';
+import { STATUS_CODE_SUCCESS } from '../constants';
 
-function ChangePwPage(props) {
-    const {username, setUsername} = props;
-
+function ChangePwPage() {
     const [password, setPassword] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogMsg, setDialogMsg] = useState('');
-    const [isSuccessful, setIsSuccessful] = useState(false);
 
     const navigate = useNavigate();
 
     const handleChangePw = async () => {
         // TODO: For security, change password/delete account should still ask for old password
-        setIsSuccessful(false);
         const username = Cookies.get('username');
-        const res = await axios.put(URL_USER_SVC+'/account', { username, password }, { withCredentials: true })
+        const res = await axios.put(URL_USER_SVC + '/account', { username, password }, { withCredentials: true })
             .catch((err) => {
                 setDialogMsg(err.response.data.message);
                 setIsDialogOpen(true);
             })
         if (res && res.status === STATUS_CODE_SUCCESS) {
-            // setDialogMsg(res.data.message);
-            // setIsSuccessful(true);
-            // setUsername('');
-            // Cookies.set('username', '');
-            // Cookies.set('auth', '');
-
             // TODO: Should navigate with a success message instead of dialog
             navigate('/match');
         }
@@ -73,10 +63,7 @@ function ChangePwPage(props) {
                     <DialogContentText>{dialogMsg}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    {isSuccessful
-                        ? <Button component={Link} to="/login">Log in</Button>
-                        : <Button onClick={closeDialog}>Done</Button>
-                    }
+                    <Button onClick={closeDialog}>Close</Button>
                 </DialogActions>
             </Dialog>
         </Box>
