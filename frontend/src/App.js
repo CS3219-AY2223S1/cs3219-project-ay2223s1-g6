@@ -8,7 +8,7 @@ import { SessionContext } from './components/contexts/SessionContext';
 import ChangePwPage from './components/pages/ChangePwPage';
 import DeleteAccPage from './components/pages/DeleteAccPage';
 import LoginPage from './components/pages/LoginPage';
-import MatchingPage from './components/pages/MatchingPage';
+import MatchPage from './components/pages/MatchPage';
 import RoomPage from './components/pages/RoomPage';
 import SignupPage from './components/pages/SignupPage';
 import { PrivateRoute } from './components/PrivateRoute';
@@ -32,7 +32,7 @@ function App() {
                                           redirectReason={'Login is required to access this page!'}/>}>
               <Route path="/delete-account" element={<DeleteAccPage/>}/>
               <Route path="/change-password" element={<ChangePwPage/>}/>
-              <Route path="/match" element={<MatchingPage/>}/>
+              <Route path="/match" element={<MatchPage/>}/>
               <Route path="/room" element={<PrivateRoute isAllowed={sessionContext.sessionActive}
                                                          redirectPath={'/match'}
                                                          redirectReason={'A match is required to access this page!'}>
