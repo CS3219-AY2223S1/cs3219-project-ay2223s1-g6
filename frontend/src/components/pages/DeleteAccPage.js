@@ -3,9 +3,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { URL_USER_SVC } from '../configs';
-import { STATUS_CODE_SUCCESS } from '../constants';
-import { AuthContext } from './contexts/AuthContext';
+import { URL_USER_SVC } from '../../configs';
+import { STATUS_CODE_SUCCESS } from '../../constants';
+import { AuthContext } from '../contexts/AuthContext';
 
 function DeleteAccPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);

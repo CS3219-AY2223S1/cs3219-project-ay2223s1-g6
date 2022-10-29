@@ -3,16 +3,16 @@ import { useContext } from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ChangePwPage from './components/ChangePwPage';
 import { AuthContext } from './components/contexts/AuthContext';
 import { SessionContext } from './components/contexts/SessionContext';
-import DeleteAccPage from './components/DeleteAccPage';
-import LoginPage from './components/LoginPage';
-import MatchingPage from './components/MatchingPage';
+import ChangePwPage from './components/pages/ChangePwPage';
+import DeleteAccPage from './components/pages/DeleteAccPage';
+import LoginPage from './components/pages/LoginPage';
+import MatchingPage from './components/pages/MatchingPage';
+import RoomPage from './components/pages/RoomPage';
+import SignupPage from './components/pages/SignupPage';
 import { PrivateRoute } from './components/PrivateRoute';
 import { RedirectRoute } from './components/RedirectRoute';
-import RoomPage from './components/RoomPage';
-import SignupPage from './components/SignupPage';
 
 function App() {
   const authContext = useContext(AuthContext);

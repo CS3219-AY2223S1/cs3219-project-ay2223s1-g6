@@ -13,10 +13,10 @@ import Cookies from 'js-cookie';
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { URL_MATCH_SVC, URL_USER_SVC } from '../configs';
-import { STATUS_CODE_SUCCESS } from '../constants';
-import { AuthContext } from './contexts/AuthContext';
-import { SessionContext } from './contexts/SessionContext';
+import { URL_MATCH_SVC, URL_USER_SVC } from '../../configs';
+import { STATUS_CODE_SUCCESS } from '../../constants';
+import { AuthContext } from '../contexts/AuthContext';
+import { SessionContext } from '../contexts/SessionContext';
 
 class MyMatchingPage extends React.Component {
     constructor(props) {

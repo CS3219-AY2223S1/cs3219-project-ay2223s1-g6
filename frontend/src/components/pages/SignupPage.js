@@ -1,33 +1,33 @@
 import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    TextField,
-    Typography,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+  Typography,
 } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { URL_USER_SVC } from '../configs';
-import { STATUS_CODE_SUCCESS } from '../constants';
-import { AuthContext } from './contexts/AuthContext';
+import { URL_USER_SVC } from '../../configs';
+import { STATUS_CODE_SUCCESS } from '../../constants';
+import { AuthContext } from '../contexts/AuthContext';
 
-function LoginPage() {
-    const [tempUsername, setTempUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [dialogMsg, setDialogMsg] = useState('');
+function SignupPage() {
+  const [tempUsername, setTempUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMsg, setDialogMsg] = useState('');
 
-    const navigate = useNavigate();
-    const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
 
-    const handleLogin = async () => {
-        const res = await axios.post(URL_USER_SVC + '/login', { username: tempUsername, password: password },
+  const handleSignup = async () => {
+        const res = await axios.post(URL_USER_SVC + '/account', { username: tempUsername, password: password },
           { withCredentials: true }).catch((err) => {
             setDialogMsg(err.response.data.message);
             setIsDialogOpen(true);
@@ -35,7 +35,7 @@ function LoginPage() {
         if (res && res.status === STATUS_CODE_SUCCESS) {
             Cookies.set('username', tempUsername);
             authContext.setLoggedIn(true);
-            navigate('/match', { replace: true });
+            navigate('/match');
         }
     };
 
@@ -43,7 +43,7 @@ function LoginPage() {
 
     return (
         <Box display={"flex"} flexDirection={"column"} width={"30%"}>
-            <Typography variant={"h3"} marginBottom={"2rem"}>Login</Typography>
+            <Typography variant={"h3"} marginBottom={"2rem"}>Sign Up</Typography>
             <TextField
                 label="Username"
                 variant="standard"
@@ -61,16 +61,16 @@ function LoginPage() {
                 sx={{marginBottom: "2rem"}}
             />
             <Box display={"flex"} flexDirection={"column"} justifyContent={"space-around"}>
-                <Button variant={"outlined"} onClick={handleLogin}>Log in</Button>
+                <Button variant={"outlined"} onClick={handleSignup}>Sign up</Button>
                 <br/>
-                <Button color="secondary" component={Link} to="/signup">Sign up for a new account</Button>
+                <Button color="secondary" component={Link} to="/login">Have an account? Go to login</Button>
             </Box>
 
             <Dialog
                 open={isDialogOpen}
                 onClose={closeDialog}
             >
-                <DialogTitle>Login</DialogTitle>
+                <DialogTitle>Sign Up</DialogTitle>
                 <DialogContent>
                     <DialogContentText>{dialogMsg}</DialogContentText>
                 </DialogContent>
@@ -82,4 +82,4 @@ function LoginPage() {
     )
 }
 
-export default LoginPage;
+export default SignupPage;

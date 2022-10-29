@@ -15,8 +15,8 @@ import Cookies from 'js-cookie';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { URL_MATCH_SVC, URL_QUESTION_SVC } from '../configs';
-import { STATUS_CODE_SUCCESS } from '../constants';
+import { URL_MATCH_SVC, URL_QUESTION_SVC } from '../../configs';
+import { STATUS_CODE_SUCCESS } from '../../constants';
 
 class MyRoomPage extends React.Component {
     constructor(props) {
