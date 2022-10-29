@@ -53,6 +53,7 @@ export async function newMatch(username, difficultyLevel, socket) {
       message: 'Match found',
       data: {
         questionId: questionId,
+        roomId: pendingMatch.roomId,
       },
     });
     console.log(`user ${username} and ${pendingMatch.username} are in room: ${pendingMatch.roomId}`);

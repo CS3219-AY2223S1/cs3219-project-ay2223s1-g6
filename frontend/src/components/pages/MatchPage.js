@@ -50,6 +50,7 @@ function MatchPage() {
       // It is actually sufficient to pass questionId in props if the room page is not persistent on refresh
       closeTimer();
       Cookies.set('question_id', msg.data.questionId);
+      Cookies.set('room_id', msg.data.roomId);
       // TODO: warn when leaving room page
       sessionContext.setSessionActive(true);
       navigate('/room');

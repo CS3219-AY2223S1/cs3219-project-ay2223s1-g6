@@ -45,6 +45,7 @@ function RoomPage() {
     matchSocket.on('room closing', (msg) => {
       console.log(msg.message);
       Cookies.remove('question_id');
+      Cookies.remove('room_id');
       // There's no need to set session context here as there's no way to go back to room page without refreshing
       // sessionActive in session context is always initialized to false
       navigate('/match', { replace: true });
