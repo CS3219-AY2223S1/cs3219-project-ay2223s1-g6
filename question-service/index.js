@@ -36,9 +36,6 @@ app.options('*', cors()); // TODO: what's this?
 //import {router} from './question_routers/questions_api';
 // import { createUser } from './controllers/question-controller';
 
-// Setup server port
-const port = process.env.PORT ||8002;
-
 // Send message for default URL
 app.get('/', (req, res) => res.send('Hello World with Express'));
 
@@ -49,7 +46,7 @@ app.use('/api/questions', router);
 // app.use('/api/questions', apiRoutes);
 // >>>>>>> 2ec9c2c58119b79a393d3c07a75875ab6680008f
 // Launch app to listen to specified port
-console.log(port)
-app.listen(port, function () {
-    console.log("Running RestHub on port " + port);
+
+app.listen(process.env.PORT, function () {
+    console.log("Running RestHub on port " + process.env.PORT);
 });

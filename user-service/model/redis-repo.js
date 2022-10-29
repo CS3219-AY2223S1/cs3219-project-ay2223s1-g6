@@ -2,13 +2,14 @@ import * as redis from 'redis'
 import * as dotenv from 'dotenv'
 
 dotenv.config();
-
-const client = redis.createClient(process.env.REDIS_ENV == "PROD"
+let uri = process.env.REDIS_ENV == "PROD"
     ? process.env.REDIS_CLOUD_URI
     : process.env.REDIS_LOCAL_URI
-)
 
-client.on('error', (err) => console.log('Redis Client Error', err))
+const client = redis.createClient({ url: uri})
+
+client.on('error', (err) => console.log(`Redis Client Error: Connect ${uri}\n`, err))
+client.on('connect', (stream) => console.log('Redis connected.'))
 
 await client.connect()
 

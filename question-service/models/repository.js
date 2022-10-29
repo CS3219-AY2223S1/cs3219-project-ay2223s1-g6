@@ -6,7 +6,7 @@ import 'dotenv/config'
 import mongoose from 'mongoose';
 import * as Console from "console";
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/questionBank', { useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_CLOUD_URI, { useNewUrlParser: true});
 
 var db = mongoose.connection;
 

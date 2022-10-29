@@ -132,6 +132,7 @@ export async function userAuthentication(req, res) {
     try {
         const username = req.query.username
         const token = req.query.auth
+        console.log('Authentication user: username.')
         if (username) {
             console.log('Received token:', token)
             const resp = await _authenticate(username, token);
