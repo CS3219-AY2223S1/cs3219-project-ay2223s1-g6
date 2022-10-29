@@ -1,11 +1,10 @@
-import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import { db } from './model/database.js';
-import { Server } from 'socket.io';
-
+import express from 'express';
 import { createServer } from 'http';
-import { handleEnterRoom, handleLeaveRoom, handleNewMatch } from './controller/match-controller.js';
+import { Server } from 'socket.io';
+import { handleJoinRoom, handleLeaveRoom, handleNewMatch } from './controller/match-controller.js';
+import { db } from './model/database.js';
 
 const app = express();
 const port = process.env.PORT || 8001;
@@ -25,7 +24,7 @@ await db.sync().then(() => {
 });
 
 const server = createServer(app);
-const io = new Server(server, { cors: { origin: "*"} });  // TODO: export does not seem to be the best practice
+const io = new Server(server, { cors: { origin: '*' } });  // TODO: export does not seem to be the best practice
 
 io.of('/api/match')
   .on('connection', (socket) => {
@@ -36,9 +35,9 @@ io.of('/api/match')
       handleNewMatch(data, socket);
     });
 
-    socket.on('enter room', (data) => {
+    socket.on('join room', (data) => {
       // emitted when user enters the room (page) after matching
-      handleEnterRoom(data, socket);
+      handleJoinRoom(data, socket);
     });
 
     socket.on('leave room', (data) => {

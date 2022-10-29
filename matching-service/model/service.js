@@ -60,7 +60,7 @@ export async function newMatch(username, difficultyLevel, socket) {
   return true;
 }
 
-export async function enterRoom(username, socket) {
+export async function joinRoom(username, socket) {
   const room = await getRoomByUsername(username);
   if (room) {
     socket.join(room.roomId);
@@ -75,7 +75,7 @@ export async function enterRoom(username, socket) {
     });
   } else {
     // this is an internal server error because it indicates the caller's logic is badly written
-    throw new Error(`No room for user ${username} to enter. Ensure 'match success' is received before 'enter room'.`);
+    throw new Error(`No room for user ${username} to join. Ensure 'match success' is received before 'join room'.`);
   }
 }
 

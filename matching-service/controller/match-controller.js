@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { enterRoom, leaveRoom, newMatch } from '../model/service.js';
+import { joinRoom, leaveRoom, newMatch } from '../model/service.js';
 
 async function authenticateUser(username, token) {
   // TODO: reference config file for user service url
@@ -44,27 +44,27 @@ export async function handleNewMatch(data, socket) {
   }
 }
 
-export async function handleEnterRoom(data, socket) {
+export async function handleJoinRoom(data, socket) {
   try {
     const { token, username } = data;
     if (token && username) {
       const authSuccess = await authenticateUser(username, token);
       if (!authSuccess) {
-        socket.emit('enter room failure', {
+        socket.emit('join room failure', {
           status: 403,
           message: 'Not allowed to access this resource',
         });
         return;
       }
-      await enterRoom(username, socket);
+      await joinRoom(username, socket);
     } else {
-      socket.emit('enter room failure', {
+      socket.emit('join room failure', {
         status: 400,
         message: 'Missing token and/or username',
       });
     }
   } catch (err) {
-    socket.emit('enter room failure', {
+    socket.emit('join room failure', {
       status: 500,
       message: `The server encounters an error: ${err}`,
     });

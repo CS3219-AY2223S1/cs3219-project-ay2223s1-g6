@@ -34,7 +34,7 @@ function RoomPage() {
   }, []);
 
   useEffect(() => {
-    matchSocket.on('enter room failure', (msg) => {
+    matchSocket.on('join room failure', (msg) => {
       console.log(msg.message);
     });
 
@@ -50,7 +50,7 @@ function RoomPage() {
       navigate('/match', { replace: true });
     });
 
-    matchSocket.emit('enter room', {
+    matchSocket.emit('join room', {
       token: Cookies.get('auth'),
       username: Cookies.get('username'),
     });
@@ -66,7 +66,7 @@ function RoomPage() {
     });
 
     return () => {
-      matchSocket.off('enter room failure');
+      matchSocket.off('join room failure');
       matchSocket.off('leave room failure');
       matchSocket.off('room closing');
     };
