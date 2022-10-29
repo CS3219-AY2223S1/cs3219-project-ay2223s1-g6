@@ -40,6 +40,12 @@ function MatchPage() {
   }, [intervalId]);
 
   useEffect(() => {
+    if (timer === 0) {
+      closeTimer();
+    }
+  }, [timer, closeTimer]);
+
+  useEffect(() => {
     socket.on('match success', (msg) => {
       // It is actually sufficient to pass questionId in props if the room page is not persistent on refresh
       closeTimer();
@@ -105,12 +111,14 @@ function MatchPage() {
   };
 
   const startTimer = () => {
+    if (isTimerOpen) {
+      setDialogTitle('Match');
+      setDialogMsg('You can only request for one match at any time');
+      setIsDialogOpen(true);
+      return;
+    }
     const newIntervalID = setInterval(() => {
-      if (timer > 1) {
-        setTimer(prev => prev - 1);
-      } else {
-        closeTimer();
-      }
+      setTimer(prev => prev - 1);
     }, 1000);
     setIntervalId(newIntervalID);
     setTimer(DURATION);
