@@ -13,7 +13,7 @@ import {
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { URL_MATCH_SVC, URL_QUESTION_SVC } from '../../configs';
 
@@ -25,13 +25,15 @@ function RoomPage() {
   const [question, setQuestion] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const loadQuestion = useCallback(async () => {
     // TODO: Refine - add session_id, backend returns roomId as session_id
-    const questionId = Cookies.get('question_id');
+    const questionId = location.state.questionId;
+    const roomId = location.state.roomId;
     const resp = await axios.get(`${URL_QUESTION_SVC}/${questionId}`);
     return resp.data.question;
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     matchSocket.on('join room failure', (msg) => {
@@ -44,8 +46,6 @@ function RoomPage() {
 
     matchSocket.on('room closing', (msg) => {
       console.log(msg.message);
-      Cookies.remove('question_id');
-      Cookies.remove('room_id');
       // There's no need to set session context here as there's no way to go back to room page without refreshing
       // sessionActive in session context is always initialized to false
       navigate('/match', { replace: true });
