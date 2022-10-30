@@ -26,7 +26,7 @@ function MatchPage() {
   const [dialogMsg, setDialogMsg] = useState('');
   const [dialogTitle, setDialogTitle] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [socket] = useState(io(URL_MATCH_SVC_MATCH_NAMESPACE));
+  const [socket] = useState(() => io(URL_MATCH_SVC_MATCH_NAMESPACE));
 
   const intervalId = 0;
   const intervalIdRef = React.useRef(intervalId);

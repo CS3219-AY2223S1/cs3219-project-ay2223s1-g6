@@ -32,6 +32,7 @@ io.of('/api/chat')
 
     socket.on('disconnect', () => {
       // nothing to handle
+      console.log('a user disconnected, socket id: ' + socket.id);
     });
   });
 

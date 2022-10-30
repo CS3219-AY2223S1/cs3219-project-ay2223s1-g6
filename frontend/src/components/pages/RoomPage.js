@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
@@ -26,20 +26,15 @@ import { SessionContext } from '../contexts/SessionContext';
 
 function RoomPage() {
   const [question, setQuestion] = useState(null);
-  const [matchSocket] = useState(io(URL_MATCH_SVC_ROOM_NAMESPACE));
-  const [editorSocket] = useState(io(URL_EDITOR_SVC_DEFAULT_NAMESPACE));
-  const [chatSocket] = useState(io(URL_CHAT_SVC_DEFAULT_NAMESPACE));
+  const [matchSocket] = useState(() => io(URL_MATCH_SVC_ROOM_NAMESPACE));
+  const [editorSocket] = useState(() => io(URL_EDITOR_SVC_DEFAULT_NAMESPACE));
+  const [chatSocket] = useState(() => io(URL_CHAT_SVC_DEFAULT_NAMESPACE));
 
   const navigate = useNavigate();
   const location = useLocation();
   const sessionContext = useContext(SessionContext);
 
   window.onbeforeunload = () => true;
-
-  const loadQuestion = useCallback(async (questionId) => {
-    const resp = await axios.get(`${URL_QUESTION_SVC}/${questionId}`);
-    return resp.data.question;
-  }, []);
 
   useEffect(() => {
     const questionId = location.state.questionId;
@@ -52,6 +47,11 @@ function RoomPage() {
       sessionContext.setSessionActive(false);
       toast.error(toastMsg);
       navigate('/match', { replace: true });
+    };
+
+    const loadQuestion = async (questionId) => {
+      const resp = await axios.get(`${URL_QUESTION_SVC}/${questionId}`);
+      return resp.data.question;
     };
 
     /* match socket */
@@ -145,8 +145,10 @@ function RoomPage() {
       console.log('Room page chat socket disconnecting: ' + chatSocket.id);
       // must ensure useEffect is only executed once at the start!
       matchSocket.disconnect();
+      editorSocket.disconnect();
+      chatSocket.disconnect();
     };
-  }, [navigate, sessionContext, loadQuestion, location, matchSocket, editorSocket, chatSocket]);
+  }, [navigate, sessionContext, location, matchSocket, editorSocket, chatSocket]);
 
   const handleLeaveRoom = () => {
     matchSocket.emit('leave room', {
