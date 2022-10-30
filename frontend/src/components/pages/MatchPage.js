@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { URL_MATCH_SVC_MATCH_NAMESPACE, URL_USER_SVC } from '../../configs';
@@ -23,33 +23,32 @@ const DURATION = 30;
 function MatchPage() {
   const [timer, setTimer] = useState(DURATION);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
-  const [intervalId, setIntervalId] = useState(0);
   const [dialogMsg, setDialogMsg] = useState('');
   const [dialogTitle, setDialogTitle] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [socket, setSocket] = useState(null);
+  const [socket] = useState(io(URL_MATCH_SVC_MATCH_NAMESPACE));
 
-  if (socket === null) {
-    console.log('new socket connection');
-    setSocket(io(URL_MATCH_SVC_MATCH_NAMESPACE));
-  }
+  const intervalId = 0;
+  const intervalIdRef = React.useRef(intervalId);
 
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const sessionContext = useContext(SessionContext);
 
-  const closeTimer = useCallback(() => {
-    clearInterval(intervalId);
-    setIsTimerOpen(false);
-  }, []);
-
   useEffect(() => {
     if (timer === 0) {
-      closeTimer();
+      clearInterval(intervalIdRef.current);
+      setIsTimerOpen(false);
     }
-  }, [timer, closeTimer]);
+  }, [timer]);
 
   useEffect(() => {
+    const closeTimer = () => {
+      // use a ref to get the current value of intervalId so that useEffect does not depend on intervalId!
+      clearInterval(intervalIdRef.current);
+      setIsTimerOpen(false);
+    };
+
     socket.on('match success', (msg) => {
       closeTimer();
       // TODO: warn when leaving room page
@@ -70,21 +69,21 @@ function MatchPage() {
     });
 
     socket.on('start waiting', () => {
-      const newIntervalID = setInterval(() => {
+      intervalIdRef.current = setInterval(() => {
         setTimer(prev => prev - 1);
       }, 1000);
-      setIntervalId(newIntervalID);
       setTimer(DURATION);
       setIsTimerOpen(true);
     });
 
     return () => {
       console.log('Match page socket disconnect: ' + socket.id);
+      // must ensure useEffect is only executed once at the start!
       socket.disconnect();
       // socket.off('match success');
       // socket.off('match failure');
     };
-  }, [navigate, sessionContext, closeTimer, socket]);
+  }, [navigate, sessionContext, socket]);
 
   const handleLogout = async () => {
     const username = Cookies.get('username');
