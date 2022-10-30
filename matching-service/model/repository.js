@@ -14,6 +14,14 @@ export async function createPendingMatch(username, socketId, difficultyLevel, ro
   }
 }
 
+export async function getAllPendingMatchesByUsername(username) {
+  return Promise.all([
+    EasyPendingMatch.findByPk(username),
+    MediumPendingMatch.findByPk(username),
+    HardPendingMatch.findByPk(username),
+  ]);
+}
+
 export async function deletePendingMatchByUsername(username, difficultyLevel) {
   switch (difficultyLevel) {
     case 'easy':

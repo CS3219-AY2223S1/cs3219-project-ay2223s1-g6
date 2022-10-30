@@ -7,6 +7,7 @@ import {
   deletePendingMatchByUsername,
   deleteRoomsByRoomId,
   findSameLevelPendingMatch,
+  getAllPendingMatchesByUsername,
   getRoomBySocketId,
   getRoomByUsername,
   updateRoom,
@@ -113,4 +114,15 @@ export async function handleDisconnect(socket) {
       message: 'Room destroyed successfully',
     });
   }
+}
+
+export async function hasExistingMatch(username) {
+  let results = await getAllPendingMatchesByUsername(username);
+  console.log(results);
+  if (results.some(result => result !== null)) {
+    return true;
+  }
+
+  results = await getRoomByUsername(username);
+  return results !== null;
 }

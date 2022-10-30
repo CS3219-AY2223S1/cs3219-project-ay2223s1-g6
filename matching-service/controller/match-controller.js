@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { handleDisconnect as _handleDisconnect, joinRoom, leaveRoom, newMatch } from '../model/service.js';
+import {
+  handleDisconnect as _handleDisconnect,
+  hasExistingMatch as _hasExistingMatch,
+  joinRoom,
+  leaveRoom,
+  newMatch,
+} from '../model/service.js';
 
 async function authenticateUser(username, token) {
   // TODO: reference config file for user service url
@@ -26,6 +32,14 @@ export async function handleNewMatch(data, socket) {
         socket.emit('match failure', {
           status: 403,
           message: 'Not allowed to access this resource',
+        });
+        return;
+      }
+      const hasExistingMatch = await _hasExistingMatch(username);
+      if (hasExistingMatch) {
+        socket.emit('match failure', {
+          status: 409,
+          message: 'There is an existing match',
         });
         return;
       }
