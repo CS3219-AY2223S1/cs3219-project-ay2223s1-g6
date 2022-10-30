@@ -65,6 +65,15 @@ function MatchPage() {
       setIsDialogOpen(true);
     });
 
+    socket.on('start waiting', () => {
+      const newIntervalID = setInterval(() => {
+        setTimer(prev => prev - 1);
+      }, 1000);
+      setIntervalId(newIntervalID);
+      setTimer(DURATION);
+      setIsTimerOpen(true);
+    });
+
     return () => {
       socket.off('match success');
       socket.off('match failure');
@@ -93,12 +102,17 @@ function MatchPage() {
   };
 
   const handleMatch = (difficulty) => {
-    socket.emit('new match', {
-      token: Cookies.get('auth'),
-      username: Cookies.get('username'),
-      difficultyLevel: difficulty,
-    });
-    startTimer();
+    if (!isTimerOpen) {
+      socket.emit('new match', {
+        token: Cookies.get('auth'),
+        username: Cookies.get('username'),
+        difficultyLevel: difficulty,
+      });
+    } else {
+      setDialogTitle('Match');
+      setDialogMsg('You can only request for one match at any time');
+      setIsDialogOpen(true);
+    }
   };
 
   const handleEasyMatch = () => {
@@ -111,21 +125,6 @@ function MatchPage() {
 
   const handleHardMatch = () => {
     handleMatch('hard');
-  };
-
-  const startTimer = () => {
-    if (isTimerOpen) {
-      setDialogTitle('Match');
-      setDialogMsg('You can only request for one match at any time');
-      setIsDialogOpen(true);
-      return;
-    }
-    const newIntervalID = setInterval(() => {
-      setTimer(prev => prev - 1);
-    }, 1000);
-    setIntervalId(newIntervalID);
-    setTimer(DURATION);
-    setIsTimerOpen(true);
   };
 
   const closeDialog = () => {
