@@ -47,12 +47,15 @@ function MatchPage() {
 
   useEffect(() => {
     socket.on('match success', (msg) => {
-      // It is actually sufficient to pass questionId in props if the room page is not persistent on refresh
       closeTimer();
-      Cookies.set('question_id', msg.data.questionId);
       // TODO: warn when leaving room page
       sessionContext.setSessionActive(true);
-      navigate('/room');
+      navigate('/room', {
+        state: {
+          questionId: msg.data.questionId,
+          roomId: msg.data.roomId,
+        },
+      });
     });
 
     socket.on('match failure', (resp) => {

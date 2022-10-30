@@ -12,30 +12,55 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
 import { URL_MATCH_SVC, URL_QUESTION_SVC } from '../../configs';
-
-const matchSocket = io(URL_MATCH_SVC);
+import { SessionContext } from '../contexts/SessionContext';
 
 // TODO: add editorSocket and chatSocket
 
 function RoomPage() {
   const [question, setQuestion] = useState(null);
+  const [matchSocket, setMatchSocket] = useState(null);
+
+  // console.log('new socket connection');
+  // const matchSocket = io(URL_MATCH_SVC);
+
+  if (matchSocket === null) {
+    console.log('new socket connection');
+    setMatchSocket(io(URL_MATCH_SVC));
+  }
+
+  if (matchSocket !== null) {
+    console.log('render room page ' + matchSocket.id);
+  }
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const sessionContext = useContext(SessionContext);
 
-  const loadQuestion = useCallback(async () => {
+  window.onbeforeunload = () => true;
+
+  const loadQuestion = useCallback(async (questionId) => {
     // TODO: Refine - add session_id, backend returns roomId as session_id
-    const questionId = Cookies.get('question_id');
     const resp = await axios.get(`${URL_QUESTION_SVC}/${questionId}`);
     return resp.data.question;
   }, []);
 
   useEffect(() => {
-    matchSocket.on('enter room failure', (msg) => {
+    const questionId = location.state.questionId;
+    const roomId = location.state.roomId;
+
+    console.log(questionId, roomId);
+
+    matchSocket.on('join room failure', (msg) => {
       console.log(msg.message);
+      matchSocket.disconnect();
+      sessionContext.setSessionActive(false);
+      toast.error('An error occurred. You may not have a valid match.');
+      navigate('/match', { replace: true });
     });
 
     matchSocket.on('leave room failure', (msg) => {
@@ -44,18 +69,17 @@ function RoomPage() {
 
     matchSocket.on('room closing', (msg) => {
       console.log(msg.message);
-      Cookies.remove('question_id');
       // There's no need to set session context here as there's no way to go back to room page without refreshing
       // sessionActive in session context is always initialized to false
       navigate('/match', { replace: true });
     });
 
-    matchSocket.emit('enter room', {
+    matchSocket.emit('join room', {
       token: Cookies.get('auth'),
       username: Cookies.get('username'),
     });
 
-    loadQuestion().then((question) => {
+    loadQuestion(questionId).then((question) => {
       setQuestion({
         title: question.question_title,
         description: question.question_description,
@@ -66,11 +90,17 @@ function RoomPage() {
     });
 
     return () => {
-      matchSocket.off('enter room failure');
-      matchSocket.off('leave room failure');
-      matchSocket.off('room closing');
+      console.log('return');
+      window.onbeforeunload = () => {};
+
+      // matchSocket.off('join room failure');
+      // matchSocket.off('leave room failure');
+      // matchSocket.off('room closing');
+
+      console.log('socket should disconnect: ' + matchSocket.id);
+      matchSocket.disconnect();
     };
-  }, [navigate, loadQuestion]);
+  }, [navigate, sessionContext, loadQuestion, location, matchSocket]);
 
   const handleLeaveRoom = () => {
     matchSocket.emit('leave room', {
