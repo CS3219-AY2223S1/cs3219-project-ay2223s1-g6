@@ -3,7 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { handleJoinRoom, handleLeaveRoom, handleNewMatch } from './controller/match-controller.js';
+import { handleDisconnect, handleJoinRoom, handleLeaveRoom, handleNewMatch } from './controller/match-controller.js';
 import { db } from './model/database.js';
 
 const app = express();
@@ -37,6 +37,7 @@ io.of('/api/match')
 
     socket.on('join room', (data) => {
       // emitted when user enters the room (page) after matching
+      console.log('Socket joining room: ' + socket.id);
       handleJoinRoom(data, socket);
     });
 
@@ -48,7 +49,8 @@ io.of('/api/match')
     socket.on('disconnect', () => {
       // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
       console.log('a user disconnected, socket id: ' + socket.id);
-      // TODO: handle disconnect (This may be a rare case)
+      console.log(socket.rooms);  // empty set because socket has already left all rooms
+      handleDisconnect(socket);
     });
   });
 
