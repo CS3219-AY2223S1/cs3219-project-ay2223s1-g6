@@ -80,8 +80,6 @@ function MatchPage() {
       console.log('Match page socket disconnect: ' + socket.id);
       // must ensure useEffect is only executed once at the start!
       socket.disconnect();
-      // socket.off('match success');
-      // socket.off('match failure');
     };
   }, [navigate, sessionContext, socket]);
 

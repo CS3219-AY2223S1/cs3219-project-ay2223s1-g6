@@ -23,19 +23,7 @@ import { SessionContext } from '../contexts/SessionContext';
 
 function RoomPage() {
   const [question, setQuestion] = useState(null);
-  const [matchSocket, setMatchSocket] = useState(null);
-
-  // console.log('new socket connection');
-  // const matchSocket = io(URL_MATCH_SVC);
-
-  if (matchSocket === null) {
-    console.log('new socket connection');
-    setMatchSocket(io(URL_MATCH_SVC_ROOM_NAMESPACE));
-  }
-
-  if (matchSocket !== null) {
-    console.log('render room page ' + matchSocket.id);
-  }
+  const [matchSocket] = useState(io(URL_MATCH_SVC_ROOM_NAMESPACE));
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,8 +40,6 @@ function RoomPage() {
   useEffect(() => {
     const questionId = location.state.questionId;
     const roomId = location.state.roomId;
-
-    console.log(questionId, roomId);
 
     matchSocket.on('join room failure', (msg) => {
       console.log(msg.message);
@@ -86,18 +72,14 @@ function RoomPage() {
         examples: question.question_examples,
       });
     }).catch((err) => {
-      console.log('cannot load question', err);
+      console.log('failed to load question', err);
     });
 
     return () => {
-      console.log('return');
       window.onbeforeunload = () => {};
 
-      // matchSocket.off('join room failure');
-      // matchSocket.off('leave room failure');
-      // matchSocket.off('room closing');
-
-      console.log('socket should disconnect: ' + matchSocket.id);
+      console.log('Room page socket disconnect: ' + matchSocket.id);
+      // must ensure useEffect is only executed once at the start!
       matchSocket.disconnect();
     };
   }, [navigate, sessionContext, loadQuestion, location, matchSocket]);
