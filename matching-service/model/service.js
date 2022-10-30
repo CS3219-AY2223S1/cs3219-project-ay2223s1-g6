@@ -3,7 +3,8 @@ import io from '../index.js';
 import {
   createPendingMatch,
   createRoom,
-  deletePendingMatch,
+  deleteAllPendingMatchesBySocketId,
+  deletePendingMatchByUsername,
   deleteRoomsByRoomId,
   findSameLevelPendingMatch,
   getRoomBySocketId,
@@ -18,7 +19,7 @@ export async function newMatch(username, difficultyLevel, socket) {
   if (pendingMatch === null) {
     // no existing pending match, create a new one and wait for 30 seconds
     const roomId = (Math.random() + 1).toString(36).slice(2, 18);
-    await createPendingMatch(username, difficultyLevel, roomId);
+    await createPendingMatch(username, socket.id, difficultyLevel, roomId);
     socket.join(roomId);
     socket.emit('start waiting', {
       status: 202,
@@ -27,7 +28,7 @@ export async function newMatch(username, difficultyLevel, socket) {
     setTimeout(async () => {
       // after 30 seconds, check if the user is still in the DB
       // if in DB -> match failure, remove the user
-      const numUsersDeleted = await deletePendingMatch(username, difficultyLevel);
+      const numUsersDeleted = await deletePendingMatchByUsername(username, difficultyLevel);
       if (numUsersDeleted === 1) {
         socket.leave(roomId);
         socket.emit('match failure', {
@@ -38,7 +39,7 @@ export async function newMatch(username, difficultyLevel, socket) {
     }, 30 * 1000);
   } else {
     // TODO: There is a potential bug here if another match is made before deletion
-    await deletePendingMatch(pendingMatch.username, difficultyLevel);
+    await deletePendingMatchByUsername(pendingMatch.username, difficultyLevel);
     socket.join(pendingMatch.roomId);
 
     // ask question service for a random question id
@@ -101,6 +102,7 @@ export async function leaveRoom(username) {
 }
 
 export async function handleDisconnect(socket) {
+  await deleteAllPendingMatchesBySocketId(socket.id);
   const room = await getRoomBySocketId(socket.id);
   if (room) {
     await deleteRoomsByRoomId(room.roomId);

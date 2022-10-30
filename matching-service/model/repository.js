@@ -1,20 +1,20 @@
 import { EasyPendingMatch, HardPendingMatch, MediumPendingMatch } from './match-model.js';
 import { Room } from './room-model.js';
 
-export async function createPendingMatch(username, difficultyLevel, roomId) {
+export async function createPendingMatch(username, socketId, difficultyLevel, roomId) {
   switch (difficultyLevel) {
     case 'easy':
-      return EasyPendingMatch.create({ username, roomId });
+      return EasyPendingMatch.create({ username, socketId, roomId });
     case 'medium':
-      return MediumPendingMatch.create({ username, roomId });
+      return MediumPendingMatch.create({ username, socketId, roomId });
     case 'hard':
-      return HardPendingMatch.create({ username, roomId });
+      return HardPendingMatch.create({ username, socketId, roomId });
     default:
       throw new Error('Invalid difficulty level');
   }
 }
 
-export async function deletePendingMatch(username, difficultyLevel) {
+export async function deletePendingMatchByUsername(username, difficultyLevel) {
   switch (difficultyLevel) {
     case 'easy':
       return EasyPendingMatch.destroy({ where: { username } });
@@ -25,6 +25,12 @@ export async function deletePendingMatch(username, difficultyLevel) {
     default:
       throw new Error('Invalid difficulty level');
   }
+}
+
+export async function deleteAllPendingMatchesBySocketId(socketId) {
+  await EasyPendingMatch.destroy({ where: { socketId } });
+  await MediumPendingMatch.destroy({ where: { socketId } });
+  await HardPendingMatch.destroy({ where: { socketId } });
 }
 
 export async function findSameLevelPendingMatch(difficultyLevel) {
