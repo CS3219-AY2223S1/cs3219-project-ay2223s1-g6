@@ -1,72 +1,72 @@
 version: "3.8"
 services:
     frontend:
-        container_name: pp-frontend
+        container_name: ${FRONTEND_HOST}
         restart: always
         build:
             context: ./frontend
         ports:
-            - "3000:3000"
+            - "${FRONTEND_PORT}:${FRONTEND_PORT}"
         networks:
             - pp-g6
     user-service:
-        container_name: pp-user-service
+        container_name: ${USER_SERVICE_HOST}
         build:
             context: ./user-service
         ports:
-            - "8000:8000"
+            - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
         networks:
             - pp-g6
-            - pp-user-service-network
+            - ${USER_SERVICE_HOST}-network
         depends_on:
             user-service-mongo:
                 condition: service_started
             user-service-redis:
                 condition: service_started
     user-service-mongo:
-        container_name: pp-user-service-mongo
+        container_name: ${USER_SERVICE_REDIS_HOST}
         image: mongo:latest
         ports:
-            - "27017:27017"
+            - "${USER_SERVICE_MONGO_PORT}:${USER_SERVICE_MONGO_PORT}"
         networks:
-            - pp-user-service-network
+            - ${USER_SERVICE_HOST}-network
     user-service-redis:
-        container_name: pp-user-service-redis
+        container_name: ${USER_SERVICE_REDIS_HOST}
         image: redis:latest
         ports:
-            - "6379:6379"
+            - "${USER_SERVICE_REDIS_PORT}:${USER_SERVICE_REDIS_PORT}"
         command: redis-server --bind 0.0.0.0 --protected-mode no
         networks:
-            - pp-user-service-network
+            - ${USER_SERVICE_HOST}-network
     matching-service:
-        container_name: pp-matching-service
+        container_name: ${MATCHING_SERVICE_HOST}
         build:
             context: ./matching-service
         ports:
-            - "8001:8001"
+            - "${MATCHING_SERVICE_PORT}:${MATCHING_SERVICE_PORT}"
         networks:
             - pp-g6
-            - pp-matching-service-network
+            - ${MATCHING_SERVICE_POSTGRES_HOST}-network
         depends_on:
             matching-service-pgsql:
                 condition: service_started
     matching-service-pgsql:
-        container_name: pp-matching-service-pgsql
+        container_name: ${MATCHING_SERVICE_POSTGRES_HOST}
         image: postgres:latest
         environment:
-            - POSTGRES_PASSWORD=mysecretpassword
+            - POSTGRES_PASSWORD=${MATCHING_SERVICE_POSTGRES_PASSWORD}
         ports:
-            - "5432:5432"
+            - "${MATCHING_SERVICE_POSTGRES_PORT}:${MATCHING_SERVICE_POSTGRES_PORT}"
         networks:
-            - pp-matching-service-network
+            - ${MATCHING_SERVICE_POSTGRES_HOST}-network
         volumes:
             - ./db/init.sql:/docker-entrypoint-initdb.d/create_db.sql
     question-service:
-        container_name: pp-question-service
+        container_name: ${QUESTION_SERVICE_HOST}
         build:
             context: ./question-service
         ports:
-            - "8002:8002"
+            - "${QUESTION_SERVICE_PORT}:${QUESTION_SERVICE_PORT}"
         networks:
             - pp-g6
 
@@ -75,10 +75,10 @@ networks:
         name: pp-g6
         driver: bridge
     pp-user-service-network:
-        name: pp-user-service-network
+        name: ${USER_SERVICE_HOST}-network
         driver: bridge
     pp-matching-service-network:
-        name: pp-matching-service-network
+        name: ${MATCHING_SERVICE_HOST}-network
         driver: bridge
 
 volumes:
