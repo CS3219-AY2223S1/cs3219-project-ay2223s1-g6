@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
-  handleDisconnect as _handleDisconnect,
+  handleMatchDisconnect as _handleMatchDisconnect,
+  handleRoomDisconnect as _handleRoomDisconnect,
   hasExistingMatch as _hasExistingMatch,
   joinRoom,
   leaveRoom,
@@ -112,9 +113,17 @@ export async function handleLeaveRoom(data, socket) {
   }
 }
 
-export async function handleDisconnect(socket) {
+export async function handleMatchDisconnect(socket) {
   try {
-    await _handleDisconnect(socket);
+    await _handleMatchDisconnect(socket);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function handleRoomDisconnect(socket) {
+  try {
+    await _handleRoomDisconnect(socket);
   } catch (err) {
     console.error(err);
   }

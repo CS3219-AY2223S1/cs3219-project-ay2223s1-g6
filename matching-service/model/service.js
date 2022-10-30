@@ -96,20 +96,23 @@ export async function leaveRoom(username) {
   // TODO: Should the socket leave the room?
 
   // for frontend to close the room for both users
-  io.of('/api/match').in(room.roomId).emit('room closing', {
+  io.of('/api/room').in(room.roomId).emit('room closing', {
     status: 200,
     message: 'Room destroyed successfully',
   });
 }
 
-export async function handleDisconnect(socket) {
+export async function handleMatchDisconnect(socket) {
   await deleteAllPendingMatchesBySocketId(socket.id);
+}
+
+export async function handleRoomDisconnect(socket) {
   const room = await getRoomBySocketId(socket.id);
   if (room) {
     await deleteRoomsByRoomId(room.roomId);
 
     // for frontend to close the room for both users
-    io.of('/api/match').in(room.roomId).emit('room closing', {
+    io.of('/api/room').in(room.roomId).emit('room closing', {
       status: 200,
       message: 'Room destroyed successfully',
     });

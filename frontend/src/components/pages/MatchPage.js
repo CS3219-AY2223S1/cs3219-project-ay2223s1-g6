@@ -13,14 +13,12 @@ import Cookies from 'js-cookie';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { URL_MATCH_SVC, URL_USER_SVC } from '../../configs';
+import { URL_MATCH_SVC_MATCH_NAMESPACE, URL_USER_SVC } from '../../configs';
 import { STATUS_CODE_SUCCESS } from '../../constants';
 import { AuthContext } from '../contexts/AuthContext';
 import { SessionContext } from '../contexts/SessionContext';
 
 const DURATION = 30;
-
-const socket = io(URL_MATCH_SVC);
 
 function MatchPage() {
   const [timer, setTimer] = useState(DURATION);
@@ -29,6 +27,12 @@ function MatchPage() {
   const [dialogMsg, setDialogMsg] = useState('');
   const [dialogTitle, setDialogTitle] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [socket, setSocket] = useState(null);
+
+  if (socket === null) {
+    console.log('new socket connection');
+    setSocket(io(URL_MATCH_SVC_MATCH_NAMESPACE));
+  }
 
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
@@ -37,7 +41,7 @@ function MatchPage() {
   const closeTimer = useCallback(() => {
     clearInterval(intervalId);
     setIsTimerOpen(false);
-  }, [intervalId]);
+  }, []);
 
   useEffect(() => {
     if (timer === 0) {
@@ -75,10 +79,12 @@ function MatchPage() {
     });
 
     return () => {
-      socket.off('match success');
-      socket.off('match failure');
+      console.log('Match page socket disconnect: ' + socket.id);
+      socket.disconnect();
+      // socket.off('match success');
+      // socket.off('match failure');
     };
-  }, [navigate, sessionContext, closeTimer]);
+  }, [navigate, sessionContext, closeTimer, socket]);
 
   const handleLogout = async () => {
     const username = Cookies.get('username');

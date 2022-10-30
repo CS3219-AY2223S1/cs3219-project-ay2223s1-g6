@@ -16,7 +16,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
-import { URL_MATCH_SVC, URL_QUESTION_SVC } from '../../configs';
+import { URL_MATCH_SVC_ROOM_NAMESPACE, URL_QUESTION_SVC } from '../../configs';
 import { SessionContext } from '../contexts/SessionContext';
 
 // TODO: add editorSocket and chatSocket
@@ -30,7 +30,7 @@ function RoomPage() {
 
   if (matchSocket === null) {
     console.log('new socket connection');
-    setMatchSocket(io(URL_MATCH_SVC));
+    setMatchSocket(io(URL_MATCH_SVC_ROOM_NAMESPACE));
   }
 
   if (matchSocket !== null) {

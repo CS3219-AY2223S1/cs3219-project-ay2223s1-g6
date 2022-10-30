@@ -3,8 +3,10 @@ const PREFIX_USER_SVC = '/api/user';
 export const URL_USER_SVC = URI_USER_SVC + PREFIX_USER_SVC;
 
 const URI_MATCH_SVC = process.env.URI_MATCH_SVC || 'http://localhost:8001';
-const PREFIX_MATCH_SVC = '/api/match';
-export const URL_MATCH_SVC = URI_MATCH_SVC + PREFIX_MATCH_SVC;
+const MATCH_SVC_MATCH_NAMESPACE = '/api/match';
+const MATCH_SVC_ROOM_NAMESPACE = '/api/room';
+export const URL_MATCH_SVC_MATCH_NAMESPACE = URI_MATCH_SVC + MATCH_SVC_MATCH_NAMESPACE;
+export const URL_MATCH_SVC_ROOM_NAMESPACE = URI_MATCH_SVC + MATCH_SVC_ROOM_NAMESPACE;
 
 const URI_QUESTION_SVC = process.env.URI_QUESTION_SVC || 'http://localhost:8002';
 const PREFIX_QUESTION_SVC = '/api/questions';

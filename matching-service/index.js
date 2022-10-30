@@ -3,7 +3,13 @@ import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { handleDisconnect, handleJoinRoom, handleLeaveRoom, handleNewMatch } from './controller/match-controller.js';
+import {
+  handleJoinRoom,
+  handleLeaveRoom,
+  handleMatchDisconnect,
+  handleNewMatch,
+  handleRoomDisconnect,
+} from './controller/match-controller.js';
 import { db } from './model/database.js';
 
 const app = express();
@@ -28,12 +34,25 @@ const io = new Server(server, { cors: { origin: '*' } });  // TODO: export does 
 
 io.of('/api/match')
   .on('connection', (socket) => {
-    console.log('a user connected, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
+    console.log('a user connected to /api/match, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
     socket.on('new match', (data) => {
+      console.log('new match');
       // emitted when user clicks a button to start looking for a new match
       handleNewMatch(data, socket);
     });
+
+    socket.on('disconnect', () => {
+      // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
+      console.log('a user disconnected from /api/match, socket id: ' + socket.id);
+      console.log(socket.rooms);  // empty set because socket has already left all rooms
+      handleMatchDisconnect(socket);
+    });
+  });
+
+io.of('/api/room')
+  .on('connection', (socket) => {
+    console.log('a user connected to /api/room, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
     socket.on('join room', (data) => {
       // emitted when user enters the room (page) after matching
@@ -48,9 +67,8 @@ io.of('/api/match')
 
     socket.on('disconnect', () => {
       // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
-      console.log('a user disconnected, socket id: ' + socket.id);
-      console.log(socket.rooms);  // empty set because socket has already left all rooms
-      handleDisconnect(socket);
+      console.log('a user disconnected from /api/room, socket id: ' + socket.id);
+      handleRoomDisconnect(socket);
     });
   });
 
