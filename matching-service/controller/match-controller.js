@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { joinRoom, leaveRoom, newMatch } from '../model/service.js';
+import { handleDisconnect as _handleDisconnect, joinRoom, leaveRoom, newMatch } from '../model/service.js';
 
 async function authenticateUser(username, token) {
   // TODO: reference config file for user service url
@@ -98,4 +98,10 @@ export async function handleLeaveRoom(data, socket) {
   }
 }
 
-// TODO: handle disconnection
+export async function handleDisconnect(socket) {
+  try {
+    await _handleDisconnect(socket);
+  } catch (err) {
+    console.error(err);
+  }
+}

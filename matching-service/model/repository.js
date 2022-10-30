@@ -48,10 +48,26 @@ export async function createRoom(username, roomId, difficultyLevel, questionId) 
   }
 }
 
-export async function deleteRoomByRoomId(roomId) {
+export async function updateRoom(username, socketId) {
+  if (!socketId) {
+    throw new Error('Invalid socketId');
+  }
+  const room = await Room.findByPk(username);
+  if (!room) {
+    throw new Error(`Room for ${username} does not exist`);
+  }
+  room.socketId = socketId;
+  return room.save();
+}
+
+export async function deleteRoomsByRoomId(roomId) {
   return Room.destroy({ where: { roomId } });
 }
 
 export async function getRoomByUsername(username) {
   return Room.findByPk(username);
+}
+
+export async function getRoomBySocketId(socketId) {
+  return Room.findOne({ socketId });
 }

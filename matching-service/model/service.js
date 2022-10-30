@@ -4,9 +4,11 @@ import {
   createPendingMatch,
   createRoom,
   deletePendingMatch,
-  deleteRoomByRoomId,
+  deleteRoomsByRoomId,
   findSameLevelPendingMatch,
+  getRoomBySocketId,
   getRoomByUsername,
+  updateRoom,
 } from './repository.js';
 
 export async function newMatch(username, difficultyLevel, socket) {
@@ -62,7 +64,7 @@ export async function newMatch(username, difficultyLevel, socket) {
 }
 
 export async function joinRoom(username, socket) {
-  const room = await getRoomByUsername(username);
+  const room = await updateRoom(username, socket.id);
   if (room) {
     socket.join(room.roomId);
     socket.emit('in room', {
@@ -83,7 +85,7 @@ export async function joinRoom(username, socket) {
 export async function leaveRoom(username) {
   const room = await getRoomByUsername(username);
   if (room) {
-    await deleteRoomByRoomId(room.roomId);
+    await deleteRoomsByRoomId(room.roomId);
   } else {
     // this is an internal server error because it indicates the caller's logic is badly written
     throw new Error(`No room for user ${username} to leave. Ensure 'match success' is received before 'leave room'.`);
@@ -96,4 +98,17 @@ export async function leaveRoom(username) {
     status: 200,
     message: 'Room destroyed successfully',
   });
+}
+
+export async function handleDisconnect(socket) {
+  const room = await getRoomBySocketId(socket.id);
+  if (room) {
+    await deleteRoomsByRoomId(room.roomId);
+
+    // for frontend to close the room for both users
+    io.of('/api/match').in(room.roomId).emit('room closing', {
+      status: 200,
+      message: 'Room destroyed successfully',
+    });
+  }
 }
