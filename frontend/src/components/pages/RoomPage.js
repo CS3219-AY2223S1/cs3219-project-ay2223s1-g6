@@ -16,14 +16,19 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
-import { URL_MATCH_SVC_ROOM_NAMESPACE, URL_QUESTION_SVC } from '../../configs';
+import {
+  URL_CHAT_SVC_DEFAULT_NAMESPACE,
+  URL_EDITOR_SVC_DEFAULT_NAMESPACE,
+  URL_MATCH_SVC_ROOM_NAMESPACE,
+  URL_QUESTION_SVC,
+} from '../../configs';
 import { SessionContext } from '../contexts/SessionContext';
-
-// TODO: add editorSocket and chatSocket
 
 function RoomPage() {
   const [question, setQuestion] = useState(null);
   const [matchSocket] = useState(io(URL_MATCH_SVC_ROOM_NAMESPACE));
+  const [editorSocket] = useState(io(URL_EDITOR_SVC_DEFAULT_NAMESPACE));
+  const [chatSocket] = useState(io(URL_CHAT_SVC_DEFAULT_NAMESPACE));
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,7 +37,6 @@ function RoomPage() {
   window.onbeforeunload = () => true;
 
   const loadQuestion = useCallback(async (questionId) => {
-    // TODO: Refine - add session_id, backend returns roomId as session_id
     const resp = await axios.get(`${URL_QUESTION_SVC}/${questionId}`);
     return resp.data.question;
   }, []);
@@ -41,28 +45,86 @@ function RoomPage() {
     const questionId = location.state.questionId;
     const roomId = location.state.roomId;
 
+    const handleFailure = (toastMsg) => {
+      if (!toastMsg) {
+        toastMsg = 'An error occurred. You may not have the permission to perform this action.';
+      }
+      sessionContext.setSessionActive(false);
+      toast.error(toastMsg);
+      navigate('/match', { replace: true });
+    };
+
+    /* match socket */
+
     matchSocket.on('join room failure', (msg) => {
       console.log(msg.message);
-      matchSocket.disconnect();
-      sessionContext.setSessionActive(false);
-      toast.error('An error occurred. You may not have a valid match.');
-      navigate('/match', { replace: true });
+      handleFailure('An error occurred. You may not have a valid match.');
     });
 
     matchSocket.on('leave room failure', (msg) => {
       console.log(msg.message);
+      handleFailure();
     });
 
     matchSocket.on('room closing', (msg) => {
       console.log(msg.message);
-      // There's no need to set session context here as there's no way to go back to room page without refreshing
-      // sessionActive in session context is always initialized to false
+      // TODO: Ask user to choose to leave room or stay alone
+
+      sessionContext.setSessionActive(false);
       navigate('/match', { replace: true });
     });
 
     matchSocket.emit('join room', {
       token: Cookies.get('auth'),
       username: Cookies.get('username'),
+    });
+
+    /* editor socket */
+
+    editorSocket.on('join room failure', (msg) => {
+      console.log(msg.message);
+      handleFailure();
+    });
+
+    editorSocket.on('change failure', (msg) => {
+      console.log(msg.message);
+      handleFailure();
+    });
+
+    editorSocket.on('new content', (msg) => {
+      // TODO: Overwrite editor content
+      // msg.data.newContent
+      // msg.data.sender
+    });
+
+    editorSocket.emit('join room', {
+      token: Cookies.get('auth'),
+      username: Cookies.get('username'),
+      roomId: roomId,
+    });
+
+    /* chat socket */
+
+    chatSocket.on('join room failure', (msg) => {
+      console.log(msg.message);
+      handleFailure();
+    });
+
+    editorSocket.on('message failure', (msg) => {
+      console.log(msg.message);
+      handleFailure();
+    });
+
+    editorSocket.on('new message', (msg) => {
+      // TODO: Add message to list
+      // msg.data.messageContent
+      // msg.data.sender
+    });
+
+    chatSocket.emit('join room', {
+      token: Cookies.get('auth'),
+      username: Cookies.get('username'),
+      roomId: roomId,
     });
 
     loadQuestion(questionId).then((question) => {
@@ -78,11 +140,13 @@ function RoomPage() {
     return () => {
       window.onbeforeunload = () => {};
 
-      console.log('Room page socket disconnect: ' + matchSocket.id);
+      console.log('Room page match socket disconnecting: ' + matchSocket.id);
+      console.log('Room page editor socket disconnecting: ' + editorSocket.id);
+      console.log('Room page chat socket disconnecting: ' + chatSocket.id);
       // must ensure useEffect is only executed once at the start!
       matchSocket.disconnect();
     };
-  }, [navigate, sessionContext, loadQuestion, location, matchSocket]);
+  }, [navigate, sessionContext, loadQuestion, location, matchSocket, editorSocket, chatSocket]);
 
   const handleLeaveRoom = () => {
     matchSocket.emit('leave room', {
