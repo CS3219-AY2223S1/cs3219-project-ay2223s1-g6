@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand'
 import { db } from './model/database.js';
 import { Server } from 'socket.io';
 
@@ -8,7 +9,9 @@ import { createServer } from 'http';
 import { handleEnterRoom, handleLeaveRoom, handleNewMatch } from './controller/match-controller.js';
 
 const app = express();
-const port = process.env.PORT || 8001;
+dotenvExpand.expand(dotenv.config())
+const port = process.env.MATCHING_SERVICE_PORT || 8001;
+const prefix = process.env.MATCHING_SERVICE_PREFIX
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,7 +30,7 @@ await db.sync().then(() => {
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*"} });  // TODO: export does not seem to be the best practice
 
-io.of('/api/match')
+io.of(prefix)
   .on('connection', (socket) => {
     console.log('a user connected, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 

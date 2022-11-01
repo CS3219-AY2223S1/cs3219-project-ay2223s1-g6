@@ -19,17 +19,17 @@ services:
             - pp-g6
             - ${USER_SERVICE_HOST}-network
         depends_on:
-            user-service-mongo:
-                condition: service_started
+            # user-service-mongo:
+            #     condition: service_started
             user-service-redis:
                 condition: service_started
-    user-service-mongo:
-        container_name: ${USER_SERVICE_REDIS_HOST}
-        image: mongo:latest
-        ports:
-            - "${USER_SERVICE_MONGO_PORT}:${USER_SERVICE_MONGO_PORT}"
-        networks:
-            - ${USER_SERVICE_HOST}-network
+    # user-service-mongo:
+    #     container_name: ${USER_SERVICE_MONGO_HOST}
+    #     image: mongo:latest
+    #     ports:
+    #         - "${USER_SERVICE_MONGO_PORT}:${USER_SERVICE_MONGO_PORT}"
+    #     networks:
+    #         - ${USER_SERVICE_HOST}-network
     user-service-redis:
         container_name: ${USER_SERVICE_REDIS_HOST}
         image: redis:latest
@@ -46,7 +46,7 @@ services:
             - "${MATCHING_SERVICE_PORT}:${MATCHING_SERVICE_PORT}"
         networks:
             - pp-g6
-            - ${MATCHING_SERVICE_POSTGRES_HOST}-network
+            - ${MATCHING_SERVICE_HOST}-network
         depends_on:
             matching-service-pgsql:
                 condition: service_started
@@ -58,7 +58,7 @@ services:
         ports:
             - "${MATCHING_SERVICE_POSTGRES_PORT}:${MATCHING_SERVICE_POSTGRES_PORT}"
         networks:
-            - ${MATCHING_SERVICE_POSTGRES_HOST}-network
+            - ${MATCHING_SERVICE_HOST}-network
         volumes:
             - ./db/init.sql:/docker-entrypoint-initdb.d/create_db.sql
     question-service:

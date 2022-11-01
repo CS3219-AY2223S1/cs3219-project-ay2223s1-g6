@@ -1,9 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import * as dotenv from 'dotenv'
+import * as dotenvExpand from 'dotenv-expand'
 import cookieParser from 'cookie-parser'
 const app = express();
-dotenv.config()
+
+dotenvExpand.expand(dotenv.config())
+const PREFIX = process.env.USER_SERVICE_PREFIX
+const PORT = process.env.USER_SERVICE_PORT
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -42,9 +46,9 @@ router.put('/account', changePassword)
 router.get('/authentication', userAuthentication)
 
 
-app.use('/api/user', router).all((_, res) => {
+app.use(PREFIX, router).all((_, res) => {
     res.setHeader('content-type', 'application/json')
     res.setHeader('Access-Control-Allow-Origin', '*')
 })
 
-app.listen(process.env.PORT, () => console.log('user-service listening on port 8000'));
+app.listen(PORT, () => console.log(`User Service listening on port ${PORT} with prefix ${PREFIX}`));

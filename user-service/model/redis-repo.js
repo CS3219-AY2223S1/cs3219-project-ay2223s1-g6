@@ -1,14 +1,15 @@
 import * as redis from 'redis'
 import * as dotenv from 'dotenv'
+import * as dotenvExpand from 'dotenv-expand'
+dotenvExpand.expand(dotenv.config())
 
-dotenv.config();
-let uri = process.env.REDIS_ENV == "PROD"
-    ? process.env.REDIS_CLOUD_URI
-    : process.env.REDIS_LOCAL_URI
+const REDIS_URI = process.env.USER_SERVICE_REDIS_ENV == "DEV"
+    ? process.env.USER_SERVICE_REDIS_URI_LOCAL
+    : process.env.USER_SERVICE_REDIS_URI_CLOUD
 
-const client = redis.createClient({ url: uri})
+const client = redis.createClient({ url: REDIS_URI })
 
-client.on('error', (err) => console.log(`Redis Client Error: Connect ${uri}\n`, err))
+client.on('error', (err) => console.log(`Redis Client Error: Connect ${REDIS_URI}\n`, err))
 client.on('connect', (stream) => console.log('Redis connected.'))
 
 await client.connect()
