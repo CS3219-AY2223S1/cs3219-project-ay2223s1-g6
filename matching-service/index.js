@@ -1,17 +1,24 @@
-import express from 'express';
 import cors from 'cors';
-import * as dotenv from 'dotenv';
-import * as dotenvExpand from 'dotenv-expand'
+import express from 'express';
 import { db } from './model/database.js';
 import { Server } from 'socket.io';
-
 import { createServer } from 'http';
-import { handleEnterRoom, handleLeaveRoom, handleNewMatch } from './controller/match-controller.js';
+import {
+  handleJoinRoom,
+  handleLeaveRoom,
+  handleMatchDisconnect,
+  handleNewMatch,
+  handleRoomDisconnect,
+} from './controller/match-controller.js';
 
 const app = express();
+
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand'
 dotenvExpand.expand(dotenv.config())
-const port = process.env.MATCHING_SERVICE_PORT || 8001;
-const prefix = process.env.MATCHING_SERVICE_PREFIX
+const PORT = process.env.MATCHING_SERVICE_PORT
+const PREFIX = process.env.MATCHING_SERVICE_PREFIX
+const ROOM_PREFIX = process.env.MATCHING_SERVICE_ROOM_PREFIX
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,20 +35,34 @@ await db.sync().then(() => {
 });
 
 const server = createServer(app);
-const io = new Server(server, { cors: { origin: "*"} });  // TODO: export does not seem to be the best practice
+const io = new Server(server, { cors: { origin: '*' } });  // TODO: export does not seem to be the best practice
 
-io.of(prefix)
+io.of(PREFIX)
   .on('connection', (socket) => {
-    console.log('a user connected, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
+    console.log('a user connected to /api/match, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
     socket.on('new match', (data) => {
+      console.log('new match');
       // emitted when user clicks a button to start looking for a new match
       handleNewMatch(data, socket);
     });
 
-    socket.on('enter room', (data) => {
+    socket.on('disconnect', () => {
+      // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
+      console.log('a user disconnected from /api/match, socket id: ' + socket.id);
+      console.log(socket.rooms);  // empty set because socket has already left all rooms
+      handleMatchDisconnect(socket);
+    });
+  });
+
+io.of(ROOM_PREFIX)
+  .on('connection', (socket) => {
+    console.log('a user connected to /api/room, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
+
+    socket.on('join room', (data) => {
       // emitted when user enters the room (page) after matching
-      handleEnterRoom(data, socket);
+      console.log('Socket joining room: ' + socket.id);
+      handleJoinRoom(data, socket);
     });
 
     socket.on('leave room', (data) => {
@@ -51,13 +72,13 @@ io.of(prefix)
 
     socket.on('disconnect', () => {
       // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
-      console.log('a user disconnected, socket id: ' + socket.id);
-      // TODO: handle disconnect (This may be a rare case)
+      console.log('a user disconnected from /api/room, socket id: ' + socket.id);
+      handleRoomDisconnect(socket);
     });
   });
 
-server.listen(port, () => {
-  console.log('Matching service server started on port ' + port);
+server.listen(PORT, () => {
+  console.log('Matching service server started on port ' + PORT);
 });
 
 export default io;  // TODO: export does not seem to be the best practice

@@ -10,49 +10,55 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { URL_MATCH_SVC, URL_USER_SVC } from '../../configs';
+import { URL_MATCH_SVC_MATCH_NAMESPACE, URL_USER_SVC } from '../../configs';
 import { STATUS_CODE_SUCCESS } from '../../constants';
 import { AuthContext } from '../contexts/AuthContext';
 import { SessionContext } from '../contexts/SessionContext';
 
 const DURATION = 30;
 
-const socket = io(URL_MATCH_SVC);
-
 function MatchPage() {
   const [timer, setTimer] = useState(DURATION);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
-  const [intervalId, setIntervalId] = useState(0);
   const [dialogMsg, setDialogMsg] = useState('');
   const [dialogTitle, setDialogTitle] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [socket] = useState(() => io(URL_MATCH_SVC_MATCH_NAMESPACE));
+
+  const intervalId = 0;
+  const intervalIdRef = React.useRef(intervalId);
 
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const sessionContext = useContext(SessionContext);
 
-  const closeTimer = useCallback(() => {
-    clearInterval(intervalId);
-    setIsTimerOpen(false);
-  }, [intervalId]);
-
   useEffect(() => {
     if (timer === 0) {
-      closeTimer();
+      clearInterval(intervalIdRef.current);
+      setIsTimerOpen(false);
     }
-  }, [timer, closeTimer]);
+  }, [timer]);
 
   useEffect(() => {
+    const closeTimer = () => {
+      // use a ref to get the current value of intervalId so that useEffect does not depend on intervalId!
+      clearInterval(intervalIdRef.current);
+      setIsTimerOpen(false);
+    };
+
     socket.on('match success', (msg) => {
-      // It is actually sufficient to pass questionId in props if the room page is not persistent on refresh
       closeTimer();
-      Cookies.set('question_id', msg.data.questionId);
       // TODO: warn when leaving room page
       sessionContext.setSessionActive(true);
-      navigate('/room');
+      navigate('/room', {
+        state: {
+          questionId: msg.data.questionId,
+          roomId: msg.data.roomId,
+        },
+      });
     });
 
     socket.on('match failure', (resp) => {
@@ -62,11 +68,20 @@ function MatchPage() {
       setIsDialogOpen(true);
     });
 
+    socket.on('start waiting', () => {
+      intervalIdRef.current = setInterval(() => {
+        setTimer(prev => prev - 1);
+      }, 1000);
+      setTimer(DURATION);
+      setIsTimerOpen(true);
+    });
+
     return () => {
-      socket.off('match success');
-      socket.off('match failure');
+      console.log('Match page socket disconnect: ' + socket.id);
+      // must ensure useEffect is only executed once at the start!
+      socket.disconnect();
     };
-  }, [navigate, sessionContext, closeTimer]);
+  }, [navigate, sessionContext, socket]);
 
   const handleLogout = async () => {
     const username = Cookies.get('username');
@@ -90,12 +105,17 @@ function MatchPage() {
   };
 
   const handleMatch = (difficulty) => {
-    socket.emit('new match', {
-      token: Cookies.get('auth'),
-      username: Cookies.get('username'),
-      difficultyLevel: difficulty,
-    });
-    startTimer();
+    if (!isTimerOpen) {
+      socket.emit('new match', {
+        token: Cookies.get('auth'),
+        username: Cookies.get('username'),
+        difficultyLevel: difficulty,
+      });
+    } else {
+      setDialogTitle('Match');
+      setDialogMsg('You can only request for one match at any time');
+      setIsDialogOpen(true);
+    }
   };
 
   const handleEasyMatch = () => {
@@ -108,21 +128,6 @@ function MatchPage() {
 
   const handleHardMatch = () => {
     handleMatch('hard');
-  };
-
-  const startTimer = () => {
-    if (isTimerOpen) {
-      setDialogTitle('Match');
-      setDialogMsg('You can only request for one match at any time');
-      setIsDialogOpen(true);
-      return;
-    }
-    const newIntervalID = setInterval(() => {
-      setTimer(prev => prev - 1);
-    }, 1000);
-    setIntervalId(newIntervalID);
-    setTimer(DURATION);
-    setIsTimerOpen(true);
   };
 
   const closeDialog = () => {

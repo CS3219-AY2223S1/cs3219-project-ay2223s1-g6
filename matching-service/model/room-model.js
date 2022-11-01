@@ -6,6 +6,11 @@ export const Room = db.define('Room', {
       type: Sequelize.STRING,
       primaryKey: true,
     },
+    socketId: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: true,
+    },
     roomId: {
       type: Sequelize.STRING,
       allowNull: false,

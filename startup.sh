@@ -4,5 +4,5 @@
 cp ./.env ./user-service/.env
 cp ./.env ./matching-service/.env
 cp ./.env ./question-service/.env
-
-# docker-compose --env-file ./.env up --build
+cp ./.env ./editor-service/.env
+cp ./.env ./chat-service/.env
