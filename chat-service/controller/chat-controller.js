@@ -47,7 +47,7 @@ export async function handleJoinRoom(data, socket) {
 export async function handleNewMessage(data, socket) {
   try {
     const { token, username, message } = data;
-    if (token && username && message) {
+    if (token && username && (message !== undefined)) {
       const authSuccess = await authenticateUser(username, token);
       if (!authSuccess) {
         socket.emit('message failure', {
