@@ -1,6 +1,6 @@
 import {
-  Box,
   Button,
+  Grid, 
   List,
   Paper,
   Table,
@@ -198,68 +198,95 @@ function RoomPage() {
   if (!question) return <></>;
 
   return (
-    <Box display={'flex'} flexDirection={'column'}>
+    <Grid>
 
-      <Typography variant={'h3'} marginBottom={'2rem'}>This is your room</Typography>
+      <Grid container spacing={3} marginBottom={'2rem'} alignItems="baseline">
+        <Grid item xs={10}>
+          <Typography variant={'h3'}>This is your room</Typography>
+        </Grid>
 
-      <Box display={'flex'} flexDirection={'row'}>
-        <Button color={'warning'} variant={'contained'} onClick={handleLeaveRoom}>End session</Button>
-      </Box>
+        <Grid item xs={2}>
+          <Button 
+            color='warning'
+            variant='contained'
+            fullWidth
+            onClick={handleLeaveRoom}
+          >
+            End Session
+          </Button>
+        </Grid>
+      </Grid>
 
-      <Typography variant={'h4'} marginBottom={'2rem'}>{question.title}</Typography>
-      <Typography variant={'h5'} marginBottom={'2rem'}>{question.description}</Typography>
-      <TableContainer component={Paper}>
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Input</TableCell>
-              <TableCell>Output</TableCell>
-              <TableCell>Explanation</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {question.examples.map((example) => (
-              <TableRow key={example._id}>
-                <TableCell>{example.example_input}</TableCell>
-                <TableCell>{example.example_output}</TableCell>
-                <TableCell>{example.example_explanation}</TableCell>
+      <Grid item xs={12} marginBottom={'2rem'}>
+        <Typography variant={'h4'} marginBottom={'1rem'}>{question.title}</Typography>
+        <Typography variant={'h5'} marginBottom={'1rem'}>{question.description}</Typography>
+        <TableContainer component={Paper}>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Input</TableCell>
+                <TableCell>Output</TableCell>
+                <TableCell>Explanation</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TextField
-        id="collaboration"
-        multiline
-        minRows={10}
-        maxRows={100}
-        placeholder="Type your answerws and work with your friend here ..."
-        value={content}
-        onChange={handleContentChange}
-      />
+            </TableHead>
+            <TableBody>
+              {question.examples.map((example) => (
+                <TableRow key={example._id}>
+                  <TableCell>{example.example_input}</TableCell>
+                  <TableCell>{example.example_output}</TableCell>
+                  <TableCell>{example.example_explanation}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
       
-      <List>
-        {
-          chat.map((msgInfo) => (
-            msgInfo.sender === Cookies.get('username')
-            ? <SentMsg sender={msgInfo.sender} message={msgInfo.chatMessage} />
-            : <ReceivedMsg sender={msgInfo.sender} message={msgInfo.chatMessage} />
-          ))
-        }
-      </List>
-
-      <Box display={'flex'} flexDirection={'row'}>
+      <Grid item xs={12} marginBottom={'2rem'}>
         <TextField
-          id="new chat message"
+          id="collaboration"
+          marginTop={'2rem'}
           multiline
-          maxRows={4}
-          value={newMessage}
-          onChange={handleNewMessageChange}
+          fullWidth
+          minRows={10}
+          maxRows={50}
+          placeholder="Type your answerws and work with your friend here ..."
+          value={content}
+          onChange={handleContentChange}
         />
-        <Button variant="outlined" align-self='flex-end' onClick={handleSendMessage}>Send</Button>
-      </Box>
+      </Grid>
       
-    </Box>
+      <Grid item xs={12} marginBottom={'2rem'}>
+        <Typography variant={'h5'}>Chat History</Typography>
+        <List>
+          {
+            chat.map((msgInfo) => (
+              msgInfo.sender === Cookies.get('username')
+              ? <SentMsg sender={msgInfo.sender} message={msgInfo.chatMessage} />
+              : <ReceivedMsg sender={msgInfo.sender} message={msgInfo.chatMessage} />
+            ))
+          }
+        </List>
+      </Grid>
+
+      <Grid container spacing={3}>
+        <Grid item xs={10}>
+          <TextField
+            id="new chat message"
+            multiline
+            fullWidth
+            maxRows={4}
+            placeholder="Send a message here ..."
+            value={newMessage}
+            onChange={handleNewMessageChange}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <Button variant="outlined" fullWidth onClick={handleSendMessage}>Send</Button>
+        </Grid>
+      </Grid>
+      
+    </Grid>
   );
 }
 
