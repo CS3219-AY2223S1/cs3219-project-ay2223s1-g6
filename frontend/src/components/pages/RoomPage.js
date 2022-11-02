@@ -182,6 +182,10 @@ function RoomPage() {
   }
 
   const handleSendMessage = () => {
+    if (newMessage === '') {
+      return;
+    }
+
     chatSocket.emit('message', {
       token: Cookies.get('auth'),
       username: Cookies.get('username'),
