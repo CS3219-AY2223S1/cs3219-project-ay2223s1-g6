@@ -1,3 +1,4 @@
+import styles from './MatchPage.module.css';
 import {
   Box,
   Button,
@@ -147,12 +148,9 @@ function MatchPage() {
 
   if (isTimerOpen) {
     return (
-      <Box>
+      <div className={styles.bg}>
         <Box
-          top={0}
-          left={0}
-          bottom={0}
-          right={0}
+          top={0} left={0} bottom={0} right={0}
           position="absolute"
           display="flex"
           alignItems="center"
@@ -166,10 +164,7 @@ function MatchPage() {
           />
         </Box>
         <Box
-          top={0}
-          left={0}
-          bottom={0}
-          right={0}
+          top={0} left={0} bottom={0} right={0}
           position="absolute"
           display="flex"
           alignItems="center"
@@ -177,52 +172,50 @@ function MatchPage() {
         >
           <Typography variant="h2" component="div">{timer}</Typography>
         </Box>
-      </Box>
+      </div>
     );
   } else {
     return (
-      <Box>
-        <Grid>
-          <Grid container item xs={12} marginBottom={'5rem'}>
-            <Grid item xs={10}>
-              <Typography variant='h3'>Match with a Friend!</Typography>
-            </Grid>
-
-            <Grid item xs={2} alignItems="baseline">
-              <Button
-                variant="contained"
-                fullWidth
-                startIcon={<Person style={{fontSize:30}} />}
-                aria-controls="simple-menu" 
-                aria-haspopup="true" 
-                onClick={handleOpenMenu}
-              >
-                User Service
-              </Button>
-              <Menu
-                id="simple-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleCloseMenu}
-              >
-                <MenuItem variant='outlined' onClick={handleLogout}>Log out</MenuItem>
-                <MenuItem variant='outlined' component={Link} to="/delete-account">Delete Account</MenuItem>
-                <MenuItem variant='outlined' component={Link} to="/change-password">Change Password</MenuItem>
-              </Menu>
-            </Grid>
+      <div className={styles.bg}>
+        <Grid container item xs={12} marginBottom={'5rem'}>
+          <Grid item xs={10}>
+            <Typography variant='h3'>Match with a Friend!</Typography>
           </Grid>
 
-          <Grid item xs={12} spacing={3} justifyContent="center">
-            <Grid item xs={6}>
-              <Button variant='outlined' fullWidth onClick={handleEasyMatch}>Match - Easy</Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button variant='outlined' fullWidth onClick={handleMediumMatch}>Match - Medium</Button>
-            </Grid>
-            <Grid item xs={6}>
-              <Button variant='outlined' fullWidth onClick={handleHardMatch}>Match - Hard</Button>
-            </Grid>
+          <Grid item xs={2} alignItems="baseline">
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<Person style={{fontSize:30}} />}
+              aria-controls="simple-menu" 
+              aria-haspopup="true" 
+              onClick={handleOpenMenu}
+            >
+              User Service
+            </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleCloseMenu}
+            >
+              <MenuItem variant='outlined' onClick={handleLogout}>Log out</MenuItem>
+              <MenuItem variant='outlined' component={Link} to="/delete-account">Delete Account</MenuItem>
+              <MenuItem variant='outlined' component={Link} to="/change-password">Change Password</MenuItem>
+            </Menu>
+          </Grid>
+        </Grid>
+
+        <Grid container direction="column" className={styles.buttonGrid}>
+          <Grid>
+            <button className={styles.buttonEasy} onClick={handleEasyMatch}>Match - Easy</button>
+          </Grid>
+          <Grid>
+            <button className={styles.buttonMed} onClick={handleMediumMatch}>Match - Medium</button>
+          </Grid>
+          <Grid>
+            <button className={styles.buttonHard} onClick={handleHardMatch}>Match - Hard</button>
           </Grid>
         </Grid>
   
@@ -238,7 +231,7 @@ function MatchPage() {
             <Button onClick={closeDialog}>Close</Button>
           </DialogActions>
         </Dialog>
-      </Box>
+      </div>
     );
   }
 }
