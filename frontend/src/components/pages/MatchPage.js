@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -21,6 +22,7 @@ import { SessionContext } from '../contexts/SessionContext';
 const DURATION = 30;
 
 function MatchPage() {
+
   const [timer, setTimer] = useState(DURATION);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [dialogMsg, setDialogMsg] = useState('');
@@ -105,17 +107,11 @@ function MatchPage() {
   };
 
   const handleMatch = (difficulty) => {
-    if (!isTimerOpen) {
-      socket.emit('new match', {
-        token: Cookies.get('auth'),
-        username: Cookies.get('username'),
-        difficultyLevel: difficulty,
-      });
-    } else {
-      setDialogTitle('Match');
-      setDialogMsg('You can only request for one match at any time');
-      setIsDialogOpen(true);
-    }
+    socket.emit('new match', {
+      token: Cookies.get('auth'),
+      username: Cookies.get('username'),
+      difficultyLevel: difficulty,
+    })
   };
 
   const handleEasyMatch = () => {
@@ -134,39 +130,70 @@ function MatchPage() {
     setIsDialogOpen(false);
   };
 
-  return (
-    <Box display={'flex'} flexDirection={'column'}>
-      <Typography variant={'h3'} marginBottom={'2rem'}>Match with a Friend!</Typography>
-      <Box display={'flex'} flexDirection={'row'}>
-        <Button variant={'outlined'} onClick={handleLogout}>Log out</Button>
-        <Button variant={'outlined'} component={Link} to="/delete-account">Delete Account</Button>
-        <Button variant={'outlined'} component={Link} to="/change-password">Change Password</Button>
+  if (isTimerOpen) {
+    return (
+      <Box>
+        <Box
+          top={0}
+          left={0}
+          bottom={0}
+          right={0}
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <CircularProgress 
+            variant="determinate" 
+            size={300}
+            thickness={5}
+            value={timer / 30 * 100} 
+          />
+        </Box>
+        <Box
+          top={0}
+          left={0}
+          bottom={0}
+          right={0}
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Typography variant="h2" component="div">{timer}</Typography>
+        </Box>
       </Box>
-      <Box display={'flex'} flexDirection={'row'}>
-        <Button variant={'outlined'} onClick={handleEasyMatch}>Match - Easy</Button>
-        <Button variant={'outlined'} onClick={handleMediumMatch}>Match - Medium</Button>
-        <Button variant={'outlined'} onClick={handleHardMatch}>Match - Hard</Button>
+    );
+  } else {
+    return (
+      <Box display='flex' flexDirection='column'>
+        <Typography variant='h3' marginBottom='2rem'>Match with a Friend!</Typography>
+        <Box display='flex' flexDirection='row'>
+          <Button variant='outlined' onClick={handleLogout}>Log out</Button>
+          <Button variant='outlined' component={Link} to="/delete-account">Delete Account</Button>
+          <Button variant='outlined' component={Link} to="/change-password">Change Password</Button>
+        </Box>
+        <Box display='flex' flexDirection='row'>
+          <Button variant='outlined' onClick={handleEasyMatch}>Match - Easy</Button>
+          <Button variant='outlined' onClick={handleMediumMatch}>Match - Medium</Button>
+          <Button variant='outlined' onClick={handleHardMatch}>Match - Hard</Button>
+        </Box>
+  
+        <Dialog
+          open={isDialogOpen}
+          onClose={closeDialog}
+        >
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{dialogMsg}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeDialog}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
-
-      <Dialog
-        open={isDialogOpen}
-        onClose={closeDialog}
-      >
-        <DialogTitle>{dialogTitle}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{dialogMsg}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog}>Close</Button>
-        </DialogActions>
-      </Dialog>
-
-      {isTimerOpen
-        ? <Typography variant={'h1'} marginTop={'2rem'}>{timer}</Typography>
-        : <div></div>
-      }
-    </Box>
-  );
+    );
+  }
 }
 
 export default MatchPage;
