@@ -42,8 +42,6 @@ function RoomPage() {
   const location = useLocation();
   const sessionContext = useContext(SessionContext);
 
-  window.onbeforeunload = () => true;
-
   useEffect(() => {
     const questionId = location.state.questionId;
     const roomId = location.state.roomId;
@@ -149,8 +147,6 @@ function RoomPage() {
     });
 
     return () => {
-      window.onbeforeunload = () => {};
-
       console.log('Room page match socket disconnecting: ' + matchSocket.id);
       console.log('Room page editor socket disconnecting: ' + editorSocket.id);
       console.log('Room page chat socket disconnecting: ' + chatSocket.id);
@@ -182,6 +178,10 @@ function RoomPage() {
   }
 
   const handleSendMessage = () => {
+    if (newMessage === '') {
+      return;
+    }
+
     chatSocket.emit('message', {
       token: Cookies.get('auth'),
       username: Cookies.get('username'),
@@ -250,7 +250,7 @@ function RoomPage() {
           fullWidth
           minRows={10}
           maxRows={50}
-          placeholder="Type your answerws and work with your friend here ..."
+          placeholder="Type your answers and work with your friend here ..."
           value={content}
           onChange={handleContentChange}
         />
