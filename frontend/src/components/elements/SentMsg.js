@@ -2,19 +2,19 @@ import {
     Grid, 
     ListItem, 
     ListItemText
-} from "@mui/material/core";
+} from "@mui/material";
 
 function SentMsg(props) {
-    [sender, message] = props;
+    const {sender, message} = props;
 
     return (
-        <ListItem>
+        <ListItem divider>
             <Grid container>
                 <Grid item xs={12}>
-                    <ListItemText align="right" primary={sender}></ListItemText>
+                    <ListItemText align="right" secondary={sender}></ListItemText>
                 </Grid>
                 <Grid item xs={12}>
-                    <ListItemText align="right" secondary={message}></ListItemText>
+                    <ListItemText align="right" primary={message}></ListItemText>
                 </Grid>
             </Grid>
         </ListItem>
