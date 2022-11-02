@@ -7,8 +7,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid, 
+  Menu, 
+  MenuItem,  
   Typography,
 } from '@mui/material';
+import { Person } from '@mui/icons-material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useContext, useEffect, useState } from 'react';
@@ -86,6 +90,7 @@ function MatchPage() {
   }, [navigate, sessionContext, socket]);
 
   const handleLogout = async () => {
+    handleCloseMenu();
     const username = Cookies.get('username');
     console.log('logout username: ' + username);
     const res = await axios.delete(URL_USER_SVC + '/login', {
@@ -130,6 +135,16 @@ function MatchPage() {
     setIsDialogOpen(false);
   };
 
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   if (isTimerOpen) {
     return (
       <Box>
@@ -166,18 +181,50 @@ function MatchPage() {
     );
   } else {
     return (
-      <Box display='flex' flexDirection='column'>
-        <Typography variant='h3' marginBottom='2rem'>Match with a Friend!</Typography>
-        <Box display='flex' flexDirection='row'>
-          <Button variant='outlined' onClick={handleLogout}>Log out</Button>
-          <Button variant='outlined' component={Link} to="/delete-account">Delete Account</Button>
-          <Button variant='outlined' component={Link} to="/change-password">Change Password</Button>
-        </Box>
-        <Box display='flex' flexDirection='row'>
-          <Button variant='outlined' onClick={handleEasyMatch}>Match - Easy</Button>
-          <Button variant='outlined' onClick={handleMediumMatch}>Match - Medium</Button>
-          <Button variant='outlined' onClick={handleHardMatch}>Match - Hard</Button>
-        </Box>
+      <Box>
+        <Grid>
+          <Grid container item xs={12} marginBottom={'5rem'}>
+            <Grid item xs={10}>
+              <Typography variant='h3'>Match with a Friend!</Typography>
+            </Grid>
+
+            <Grid item xs={2} alignItems="baseline">
+              <Button
+                variant="contained"
+                fullWidth
+                startIcon={<Person style={{fontSize:30}} />}
+                aria-controls="simple-menu" 
+                aria-haspopup="true" 
+                onClick={handleOpenMenu}
+              >
+                User Service
+              </Button>
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleCloseMenu}
+              >
+                <MenuItem variant='outlined' onClick={handleLogout}>Log out</MenuItem>
+                <MenuItem variant='outlined' component={Link} to="/delete-account">Delete Account</MenuItem>
+                <MenuItem variant='outlined' component={Link} to="/change-password">Change Password</MenuItem>
+              </Menu>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={12} spacing={3} justifyContent="center">
+            <Grid item xs={6}>
+              <Button variant='outlined' fullWidth onClick={handleEasyMatch}>Match - Easy</Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button variant='outlined' fullWidth onClick={handleMediumMatch}>Match - Medium</Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button variant='outlined' fullWidth onClick={handleHardMatch}>Match - Hard</Button>
+            </Grid>
+          </Grid>
+        </Grid>
   
         <Dialog
           open={isDialogOpen}
