@@ -250,7 +250,7 @@ function RoomPage() {
           fullWidth
           minRows={10}
           maxRows={50}
-          placeholder="Type your answerws and work with your friend here ..."
+          placeholder="Type your answers and work with your friend here ..."
           value={content}
           onChange={handleContentChange}
         />
