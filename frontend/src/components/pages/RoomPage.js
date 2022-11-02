@@ -42,8 +42,6 @@ function RoomPage() {
   const location = useLocation();
   const sessionContext = useContext(SessionContext);
 
-  window.onbeforeunload = () => true;
-
   useEffect(() => {
     const questionId = location.state.questionId;
     const roomId = location.state.roomId;
@@ -149,8 +147,6 @@ function RoomPage() {
     });
 
     return () => {
-      window.onbeforeunload = () => {};
-
       console.log('Room page match socket disconnecting: ' + matchSocket.id);
       console.log('Room page editor socket disconnecting: ' + editorSocket.id);
       console.log('Room page chat socket disconnecting: ' + chatSocket.id);
