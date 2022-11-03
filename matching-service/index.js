@@ -1,8 +1,8 @@
 import cors from 'cors';
-import 'dotenv/config';
 import express from 'express';
-import { createServer } from 'http';
+import { db } from './model/database.js';
 import { Server } from 'socket.io';
+import { createServer } from 'http';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -10,10 +10,15 @@ import {
   handleNewMatch,
   handleRoomDisconnect,
 } from './controller/match-controller.js';
-import { db } from './model/database.js';
 
 const app = express();
-const port = process.env.PORT || 8001;
+
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand'
+dotenvExpand.expand(dotenv.config())
+const PORT = process.env.MATCHING_SERVICE_PORT
+const PREFIX = process.env.MATCHING_SERVICE_PREFIX
+const ROOM_PREFIX = process.env.MATCHING_SERVICE_ROOM_PREFIX
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,7 +37,7 @@ await db.sync().then(() => {
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });  // TODO: export does not seem to be the best practice
 
-io.of('/api/match')
+io.of(PREFIX)
   .on('connection', (socket) => {
     console.log('a user connected to /api/match, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
@@ -50,7 +55,7 @@ io.of('/api/match')
     });
   });
 
-io.of('/api/room')
+io.of(ROOM_PREFIX)
   .on('connection', (socket) => {
     console.log('a user connected to /api/room, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
@@ -72,8 +77,8 @@ io.of('/api/room')
     });
   });
 
-server.listen(port, () => {
-  console.log('Matching service server started on port ' + port);
+server.listen(PORT, () => {
+  console.log('Matching service server started on port ' + PORT);
 });
 
 export default io;  // TODO: export does not seem to be the best practice

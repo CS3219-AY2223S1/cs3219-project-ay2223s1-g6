@@ -53,6 +53,7 @@ export async function changePassword(username, newPassword, token) {
 
 export async function login(username, password) {
     const hashed = await ormRetreivePassword(username)
+    console.log('password retreived')
     if (verifyPassword(password, hashed) === false) {
         return { OK:false, token:'' }
     }

@@ -1,12 +1,16 @@
 import cors from 'cors';
-import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { handleJoinRoom, handleNewMessage } from './controller/chat-controller.js';
 
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand'
+dotenvExpand.expand(dotenv.config())
+const PORT = process.env.COMMUNICATION_SERVICE_PORT
+const PREFIX = process.env.COMMUNICATION_SERVICE_PREFIX
+
 const app = express();
-const port = process.env.PORT || 8004;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -16,7 +20,7 @@ app.options('*', cors());
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-io.of('/api/chat')
+io.of(PREFIX)
   .on('connection', (socket) => {
     console.log('a user connected, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
@@ -36,8 +40,8 @@ io.of('/api/chat')
     });
   });
 
-server.listen(port, () => {
-  console.log('Chat service server started on port ' + port);
+server.listen(PORT, () => {
+  console.log('Chat service server started on port ' + PORT);
 });
 
 export default io;

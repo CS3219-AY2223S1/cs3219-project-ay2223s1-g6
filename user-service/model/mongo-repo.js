@@ -1,16 +1,17 @@
 import UserModel from './user-model.js'
-import * as dotenv from "dotenv"
 import * as mongoose from "mongoose"
+import * as dotenv from 'dotenv'
+import * as dotenvExpand from 'dotenv-expand'
+dotenvExpand.expand(dotenv.config())
 
-dotenv.config()
+const MONGO_URI = process.env.USER_SERVICE_MONGO_ENV == "DEV"
+    ? process.env.USER_SERVICE_MONGO_URI_LOCAL
+    : process.env.USER_SERVICE_MONGO_URI_CLOUD
 
-let uri = process.env.MONGO_ENV == "PROD"
-  ? process.env.MONGO_CLOUD_URI
-  : process.env.MONGO_LOCAL_URI
 
 try {
   mongoose.connect(
-    uri,
+    MONGO_URI,
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => { console.log("Mongodb connected."); },
   )
@@ -18,22 +19,11 @@ try {
   console.error(e)
 }
 
-
-//const con = mongoose.connection
-//con.on('error', (err) => console.log(`MongoDB connection Error: ${err}`))
-//con.once("open", () => console.log("Connected to MongoDB"));
-
 export async function createUser(params) {
   return new UserModel(params)
 }
 
 export async function findUserByUsername(params) {
-  // let user = new UserModel()
-  // UserModel.findOne({ username: params }).exec(function(err, u) {
-  //   if (err) console.log(err)
-  //   user = u
-  // })
-  // return user
   return UserModel.where('username').equals(params)
 }
 

@@ -7,6 +7,12 @@ import bodyParser from 'body-parser';
 import express from 'express';
 // Import routes
 import router from './question_routers/questions_api.js';
+
+import * as dotenv from 'dotenv'
+import * as dotenvExpand from 'dotenv-expand'
+dotenvExpand.expand(dotenv.config())
+const PREFIX = process.env.QUESTION_SERVICE_PREFIX
+const PORT = process.env.QUESTION_SERVICE_PORT
 // Import Mongoose
 //let mongoose = require('mongoose');
 // Initialise the app
@@ -36,20 +42,17 @@ app.options('*', cors()); // TODO: what's this?
 //import {router} from './question_routers/questions_api';
 // import { createUser } from './controllers/question-controller';
 
-// Setup server port
-const port = process.env.PORT ||8002;
-
 // Send message for default URL
 app.get('/', (req, res) => res.send('Hello World with Express'));
 
 //Use Api routes in the App
 // <<<<<<< HEAD
-app.use('/api/questions', router);
+app.use(PREFIX, router);
 // =======
 // app.use('/api/questions', apiRoutes);
 // >>>>>>> 2ec9c2c58119b79a393d3c07a75875ab6680008f
 // Launch app to listen to specified port
-console.log(port)
-app.listen(port, function () {
-    console.log("Running RestHub on port " + port);
+
+app.listen(PORT, function () {
+    console.log("Question Service listening to " + PORT);
 });
