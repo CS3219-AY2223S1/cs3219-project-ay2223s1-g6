@@ -54,7 +54,8 @@ export async function handleJoinRoom(data, socket) {
 export async function handleEditorChange(data, socket) {
   try {
     const { token, username, newContent } = data;
-    if (token && username && newContent) {
+    // newContent can be empty
+    if (token && username && (newContent !== undefined)) {
       const authSuccess = await authenticateUser(username, token);
       if (!authSuccess) {
         socket.emit('change failure', {
