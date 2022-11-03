@@ -16,11 +16,11 @@ import {
 import * as dotenv from 'dotenv'
 import * as dotenvExpand from 'dotenv-expand'
 dotenvExpand.expand(dotenv.config())
-const QUESTION_SRV_HOST = process.env.QUESTION_SERVICE_HOST
-const QUESTION_SRV_PORT = process.env.QUESTION_SERVICE_PORT
 const QUESTION_SRV_PREFIX = process.env.QUESTION_SERVICE_PREFIX
 const MATCHING_SRV_PREFIX = process.env.MATCHING_SERVICE_PREFIX
 const ROOM_PREFIX = process.env.MATCHING_SERVICE_ROOM_PREFIX
+const GATEWAY_HOST = process.env.API_GATEWAY_HOST
+const GATEWAY_PORT = process.env.API_GATEWAY_PORT
 
 export async function newMatch(username, difficultyLevel, socket) {
   // TODO: There should be a check here to verify the user is not in the DB (same level probably)
@@ -54,7 +54,7 @@ export async function newMatch(username, difficultyLevel, socket) {
 
     // ask question service for a random question id
     // TODO: reference config file for question service url
-    const resp = await axios.get(`http://${QUESTION_SRV_HOST}:${QUESTION_SRV_PORT}${QUESTION_SRV_PREFIX}/randomId/${difficultyLevel}`);
+    const resp = await axios.get(`http://${GATEWAY_HOST}:${GATEWAY_PORT}${QUESTION_SRV_PREFIX}/randomId/${difficultyLevel}`);
     const questionId = resp.data.questionId;
 
     // add both users into Room DB

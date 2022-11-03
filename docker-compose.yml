@@ -85,6 +85,35 @@ services:
             - "${COMMUNICATION_SERVICE_PORT}:${COMMUNICATION_SERVICE_PORT}"
         networks:
             - pp-g6
+    api-gateway:
+        container_name: ${API_GATEWAY_HOST}
+        build:
+            context: ./api-gateway
+        ports:
+            - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+        networks:
+            - pp-g6
+        environment:
+            - API_GATEWAY_PORT=${API_GATEWAY_PORT}
+            - FRONTEND_HOST=${FRONTEND_HOST}
+            - FRONTEND_PORT=${FRONTEND_PORT}
+            - USER_SERVICE_HOST=${USER_SERVICE_HOST}
+            - USER_SERVICE_PORT=${USER_SERVICE_PORT}
+            - USER_SERVICE_PREFIX=${USER_SERVICE_PREFIX}
+            - MATCHING_SERVICE_HOST=${MATCHING_SERVICE_HOST}
+            - MATCHING_SERVICE_PORT=${MATCHING_SERVICE_PORT}
+            - MATCHING_SERVICE_PREFIX=${MATCHING_SERVICE_PREFIX}
+            - MATCHING_SERVICE_ROOM_PREFIX=${MATCHING_SERVICE_ROOM_PREFIX}
+            - QUESTION_SERVICE_HOST=${QUESTION_SERVICE_HOST}
+            - QUESTION_SERVICE_PORT=${QUESTION_SERVICE_PORT}
+            - QUESTION_SERVICE_PREFIX=${QUESTION_SERVICE_PREFIX}
+            - COLLABORATION_SERVICE_HOST=${COLLABORATION_SERVICE_HOST}
+            - COLLABORATION_SERVICE_PORT=${COLLABORATION_SERVICE_PORT}
+            - COLLABORATION_SERVICE_PREFIX=${COLLABORATION_SERVICE_PREFIX}
+            - COMMUNICATION_SERVICE_HOST=${COMMUNICATION_SERVICE_HOST}
+            - COMMUNICATION_SERVICE_PORT=${COMMUNICATION_SERVICE_PORT}
+            - COMMUNICATION_SERVICE_PREFIX=${COMMUNICATION_SERVICE_PREFIX}
+        command: /bin/bash -c "envsubst < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
 networks:
     pp-g6:
