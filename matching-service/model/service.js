@@ -13,14 +13,13 @@ import {
   updateRoom,
 } from './repository.js';
 
-import * as dotenv from 'dotenv'
-import * as dotenvExpand from 'dotenv-expand'
-dotenvExpand.expand(dotenv.config())
-const QUESTION_SRV_HOST = process.env.QUESTION_SERVICE_HOST
-const QUESTION_SRV_PORT = process.env.QUESTION_SERVICE_PORT
-const QUESTION_SRV_PREFIX = process.env.QUESTION_SERVICE_PREFIX
-const MATCHING_SRV_PREFIX = process.env.MATCHING_SERVICE_PREFIX
-const ROOM_PREFIX = process.env.MATCHING_SERVICE_ROOM_PREFIX
+// TODO: Change to use variable expansion
+const QUESTION_SRV_HOST = process.env.QUESTION_SERVICE_HOST;
+const QUESTION_SRV_PORT = process.env.QUESTION_SERVICE_PORT;
+const QUESTION_SRV_PREFIX = process.env.QUESTION_SERVICE_PREFIX;
+
+const matchNamespace = process.env.MATCHING_SERVICE_SOCKETIO_MATCH_NAMESPACE;
+const roomNamespace = process.env.MATCHING_SERVICE_SOCKETIO_ROOM_NAMESPACE;
 
 export async function newMatch(username, difficultyLevel, socket) {
   // TODO: There should be a check here to verify the user is not in the DB (same level probably)
@@ -54,14 +53,15 @@ export async function newMatch(username, difficultyLevel, socket) {
 
     // ask question service for a random question id
     // TODO: reference config file for question service url
-    const resp = await axios.get(`http://${QUESTION_SRV_HOST}:${QUESTION_SRV_PORT}${QUESTION_SRV_PREFIX}/randomId/${difficultyLevel}`);
+    const resp = await axios.get(
+      `http://${QUESTION_SRV_HOST}:${QUESTION_SRV_PORT}${QUESTION_SRV_PREFIX}/randomId/${difficultyLevel}`);
     const questionId = resp.data.questionId;
 
     // add both users into Room DB
     await createRoom(pendingMatch.username, pendingMatch.roomId, difficultyLevel, questionId);
     await createRoom(username, pendingMatch.roomId, difficultyLevel, questionId);
 
-    io.of(MATCHING_SRV_PREFIX).in(pendingMatch.roomId).emit('match success', {
+    io.of(matchNamespace).in(pendingMatch.roomId).emit('match success', {
       status: 200,
       message: 'Match found',
       data: {
@@ -105,7 +105,7 @@ export async function leaveRoom(username) {
   // TODO: Should the socket leave the room?
 
   // for frontend to close the room for both users
-  io.of(ROOM_PREFIX).in(room.roomId).emit('room closing', {
+  io.of(roomNamespace).in(room.roomId).emit('room closing', {
     status: 200,
     message: 'Room destroyed successfully',
   });
@@ -121,7 +121,7 @@ export async function handleRoomDisconnect(socket) {
     await deleteRoomsByRoomId(room.roomId);
 
     // for frontend to close the room for both users
-    io.of(ROOM_PREFIX).in(room.roomId).emit('room closing', {
+    io.of(roomNamespace).in(room.roomId).emit('room closing', {
       status: 200,
       message: 'Room destroyed successfully',
     });

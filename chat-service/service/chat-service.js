@@ -1,10 +1,5 @@
 import io from '../index.js';
 
-import * as dotenv from 'dotenv';
-import * as dotenvExpand from 'dotenv-expand'
-dotenvExpand.expand(dotenv.config())
-const PREFIX = process.env.COMMUNICATION_SERVICE_PREFIX
-
 export function joinRoom(roomId, socket) {
   socket.join(roomId);
 }
@@ -12,7 +7,7 @@ export function joinRoom(roomId, socket) {
 export function newMessage(username, message, socket) {
   const [, room] = socket.rooms;
   if (room) {
-    io.of(PREFIX).in(room).emit('new message', {
+    io.in(room).emit('new message', {
       status: 200,
       message: 'Received a new message',
       data: {

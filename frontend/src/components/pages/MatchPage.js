@@ -13,7 +13,7 @@ import Cookies from 'js-cookie';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { URL_MATCH_SVC_MATCH_NAMESPACE, URL_USER_SVC } from '../../configs';
+import { MATCHING_SVC_SOCKETIO_PATH, URL_MATCHING_SVC_MATCH_NAMESPACE, URL_USER_SVC } from '../../configs';
 import { STATUS_CODE_SUCCESS } from '../../constants';
 import { AuthContext } from '../contexts/AuthContext';
 import { SessionContext } from '../contexts/SessionContext';
@@ -26,7 +26,8 @@ function MatchPage() {
   const [dialogMsg, setDialogMsg] = useState('');
   const [dialogTitle, setDialogTitle] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [socket] = useState(() => io(URL_MATCH_SVC_MATCH_NAMESPACE));
+  const [socket] = useState(
+    () => io(URL_MATCHING_SVC_MATCH_NAMESPACE, { path: MATCHING_SVC_SOCKETIO_PATH }));
 
   const intervalId = 0;
   const intervalIdRef = React.useRef(intervalId);

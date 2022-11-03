@@ -1,6 +1,6 @@
 import {
   Button,
-  Grid, 
+  Grid,
   List,
   Paper,
   Table,
@@ -19,9 +19,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
 import {
-  URL_CHAT_SVC_DEFAULT_NAMESPACE,
-  URL_EDITOR_SVC_DEFAULT_NAMESPACE,
-  URL_MATCH_SVC_ROOM_NAMESPACE,
+  CHAT_SVC_SOCKETIO_PATH,
+  EDITOR_SVC_SOCKETIO_PATH,
+  MATCHING_SVC_SOCKETIO_PATH,
+  URL_CHAT_SVC,
+  URL_EDITOR_SVC,
+  URL_MATCHING_SVC_ROOM_NAMESPACE,
   URL_QUESTION_SVC,
 } from '../../configs';
 import { SessionContext } from '../contexts/SessionContext';
@@ -34,9 +37,9 @@ function RoomPage() {
   const [chat, setChat] = useState([]);
   const [newMessage, setNewMessage] = useState('');
 
-  const [matchSocket] = useState(() => io(URL_MATCH_SVC_ROOM_NAMESPACE));
-  const [editorSocket] = useState(() => io(URL_EDITOR_SVC_DEFAULT_NAMESPACE));
-  const [chatSocket] = useState(() => io(URL_CHAT_SVC_DEFAULT_NAMESPACE));
+  const [matchSocket] = useState(() => io(URL_MATCHING_SVC_ROOM_NAMESPACE, { path: MATCHING_SVC_SOCKETIO_PATH }));
+  const [editorSocket] = useState(() => io(URL_EDITOR_SVC, { path: EDITOR_SVC_SOCKETIO_PATH }));
+  const [chatSocket] = useState(() => io(URL_CHAT_SVC, { path: CHAT_SVC_SOCKETIO_PATH }));
 
   const navigate = useNavigate();
   const location = useLocation();

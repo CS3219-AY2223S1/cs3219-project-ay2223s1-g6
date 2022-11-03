@@ -1,12 +1,9 @@
 import axios from 'axios';
 import { joinRoom, newChange } from '../service/editor-service.js';
 
-import * as dotenv from 'dotenv'
-import * as dotenvExpand from 'dotenv-expand'
-dotenvExpand.expand(dotenv.config())
-const USER_SRV_HOST = process.env.USER_SERVICE_HOST
-const USER_SRV_PORT = process.env.USER_SERVICE_PORT
-const USER_SRV_PREFIX = process.env.USER_SERVICE_PREFIX
+const USER_SRV_HOST = process.env.USER_SERVICE_HOST;
+const USER_SRV_PORT = process.env.USER_SERVICE_PORT;
+const USER_SRV_PREFIX = process.env.USER_SERVICE_PREFIX;
 
 async function authenticateUser(username, token) {
   // TODO: reference config file for user service url
