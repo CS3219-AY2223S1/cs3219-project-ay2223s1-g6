@@ -1,8 +1,9 @@
 import cors from 'cors';
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand';
 import express from 'express';
-import { db } from './model/database.js';
-import { Server } from 'socket.io';
 import { createServer } from 'http';
+import { Server } from 'socket.io';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -10,15 +11,12 @@ import {
   handleNewMatch,
   handleRoomDisconnect,
 } from './controller/match-controller.js';
+import { db } from './model/database.js';
 
 const app = express();
 
-import * as dotenv from 'dotenv';
-import * as dotenvExpand from 'dotenv-expand'
-dotenvExpand.expand(dotenv.config())
-const PORT = process.env.MATCHING_SERVICE_PORT
-const PREFIX = process.env.MATCHING_SERVICE_PREFIX
-const ROOM_PREFIX = process.env.MATCHING_SERVICE_ROOM_PREFIX
+dotenvExpand.expand(dotenv.config());
+const PORT = process.env.MATCHING_SERVICE_PORT;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,27 +33,29 @@ await db.sync().then(() => {
 });
 
 const server = createServer(app);
-const io = new Server(server, { cors: { origin: '*' } });  // TODO: export does not seem to be the best practice
+const io = new Server(server, {
+  cors: { origin: '*' },
+  path: process.env.MATCHING_SERVICE_SOCKETIO_PATH,
+});  // TODO: export does not seem to be the best practice
 
-io.of(PREFIX)
-  .on('connection', (socket) => {
-    console.log('a user connected to /api/match, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
+io.on('connection', (socket) => {
+  console.log('a user connected to /api/match, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
-    socket.on('new match', (data) => {
-      console.log('new match');
-      // emitted when user clicks a button to start looking for a new match
-      handleNewMatch(data, socket);
-    });
-
-    socket.on('disconnect', () => {
-      // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
-      console.log('a user disconnected from /api/match, socket id: ' + socket.id);
-      console.log(socket.rooms);  // empty set because socket has already left all rooms
-      handleMatchDisconnect(socket);
-    });
+  socket.on('new match', (data) => {
+    console.log('new match');
+    // emitted when user clicks a button to start looking for a new match
+    handleNewMatch(data, socket);
   });
 
-io.of(ROOM_PREFIX)
+  socket.on('disconnect', () => {
+    // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
+    console.log('a user disconnected from /api/match, socket id: ' + socket.id);
+    console.log(socket.rooms);  // empty set because socket has already left all rooms
+    handleMatchDisconnect(socket);
+  });
+});
+
+io.of(process.env.MATCHING_SERVICE_SOCKETIO_ROOM_NAMESPACE)
   .on('connection', (socket) => {
     console.log('a user connected to /api/room, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
