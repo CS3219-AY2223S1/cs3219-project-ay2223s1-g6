@@ -124,7 +124,7 @@ function MatchPage() {
       token: Cookies.get('auth'),
       username: Cookies.get('username'),
       difficultyLevel: difficulty,
-    })
+    });
   };
 
   const handleEasyMatch = () => {
@@ -163,11 +163,11 @@ function MatchPage() {
           alignItems="center"
           justifyContent="center"
         >
-          <CircularProgress 
-            variant="determinate" 
+          <CircularProgress
+            variant="determinate"
             size={300}
             thickness={5}
-            value={timer / 30 * 100} 
+            value={timer / 30 * 100}
           />
         </Box>
         <Box
@@ -186,16 +186,16 @@ function MatchPage() {
       <div className={styles.bg}>
         <Grid container item xs={12} marginBottom={'5rem'}>
           <Grid item xs={10}>
-            <Typography variant='h3'>Match with a Friend!</Typography>
+            <Typography variant="h3">Match with a Friend!</Typography>
           </Grid>
 
           <Grid item xs={2} alignItems="baseline">
             <Button
               variant="contained"
               fullWidth
-              startIcon={<Person style={{fontSize:30}} />}
-              aria-controls="simple-menu" 
-              aria-haspopup="true" 
+              startIcon={<Person style={{ fontSize: 30 }}/>}
+              aria-controls="simple-menu"
+              aria-haspopup="true"
               onClick={handleOpenMenu}
             >
               User Service
@@ -207,9 +207,9 @@ function MatchPage() {
               open={Boolean(anchorEl)}
               onClose={handleCloseMenu}
             >
-              <MenuItem variant='outlined' onClick={handleLogout}>Log out</MenuItem>
-              <MenuItem variant='outlined' component={Link} to="/delete-account">Delete Account</MenuItem>
-              <MenuItem variant='outlined' component={Link} to="/change-password">Change Password</MenuItem>
+              <MenuItem variant="outlined" onClick={handleLogout}>Log out</MenuItem>
+              <MenuItem variant="outlined" component={Link} to="/delete-account">Delete Account</MenuItem>
+              <MenuItem variant="outlined" component={Link} to="/change-password">Change Password</MenuItem>
             </Menu>
           </Grid>
         </Grid>
@@ -225,7 +225,7 @@ function MatchPage() {
             <button className={styles.buttonHard} onClick={handleHardMatch}>Match - Hard</button>
           </Grid>
         </Grid>
-  
+
         <Dialog
           open={isDialogOpen}
           onClose={closeDialog}
