@@ -1,13 +1,19 @@
+import styles from './MatchPage.module.css';
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid, 
+  Menu, 
+  MenuItem,  
   Typography,
 } from '@mui/material';
+import { Person } from '@mui/icons-material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useContext, useEffect, useState } from 'react';
@@ -21,6 +27,7 @@ import { SessionContext } from '../contexts/SessionContext';
 const DURATION = 30;
 
 function MatchPage() {
+
   const [timer, setTimer] = useState(DURATION);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [dialogMsg, setDialogMsg] = useState('');
@@ -85,6 +92,7 @@ function MatchPage() {
   }, [navigate, sessionContext, socket]);
 
   const handleLogout = async () => {
+    handleCloseMenu();
     const username = Cookies.get('username');
     console.log('logout username: ' + username);
     const res = await axios.delete(URL_USER_SVC + '/login', {
@@ -106,17 +114,11 @@ function MatchPage() {
   };
 
   const handleMatch = (difficulty) => {
-    if (!isTimerOpen) {
-      socket.emit('new match', {
-        token: Cookies.get('auth'),
-        username: Cookies.get('username'),
-        difficultyLevel: difficulty,
-      });
-    } else {
-      setDialogTitle('Match');
-      setDialogMsg('You can only request for one match at any time');
-      setIsDialogOpen(true);
-    }
+    socket.emit('new match', {
+      token: Cookies.get('auth'),
+      username: Cookies.get('username'),
+      difficultyLevel: difficulty,
+    })
   };
 
   const handleEasyMatch = () => {
@@ -135,39 +137,104 @@ function MatchPage() {
     setIsDialogOpen(false);
   };
 
-  return (
-    <Box display={'flex'} flexDirection={'column'}>
-      <Typography variant={'h3'} marginBottom={'2rem'}>Match with a Friend!</Typography>
-      <Box display={'flex'} flexDirection={'row'}>
-        <Button variant={'outlined'} onClick={handleLogout}>Log out</Button>
-        <Button variant={'outlined'} component={Link} to="/delete-account">Delete Account</Button>
-        <Button variant={'outlined'} component={Link} to="/change-password">Change Password</Button>
-      </Box>
-      <Box display={'flex'} flexDirection={'row'}>
-        <Button variant={'outlined'} onClick={handleEasyMatch}>Match - Easy</Button>
-        <Button variant={'outlined'} onClick={handleMediumMatch}>Match - Medium</Button>
-        <Button variant={'outlined'} onClick={handleHardMatch}>Match - Hard</Button>
-      </Box>
+  const [anchorEl, setAnchorEl] = useState(null);
 
-      <Dialog
-        open={isDialogOpen}
-        onClose={closeDialog}
-      >
-        <DialogTitle>{dialogTitle}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{dialogMsg}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog}>Close</Button>
-        </DialogActions>
-      </Dialog>
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-      {isTimerOpen
-        ? <Typography variant={'h1'} marginTop={'2rem'}>{timer}</Typography>
-        : <div></div>
-      }
-    </Box>
-  );
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  if (isTimerOpen) {
+    return (
+      <div className={styles.bg}>
+        <Box
+          top={0} left={0} bottom={0} right={0}
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <CircularProgress 
+            variant="determinate" 
+            size={300}
+            thickness={5}
+            value={timer / 30 * 100} 
+          />
+        </Box>
+        <Box
+          top={0} left={0} bottom={0} right={0}
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Typography variant="h2" component="div">{timer}</Typography>
+        </Box>
+      </div>
+    );
+  } else {
+    return (
+      <div className={styles.bg}>
+        <Grid container item xs={12} marginBottom={'5rem'}>
+          <Grid item xs={10}>
+            <Typography variant='h3'>Match with a Friend!</Typography>
+          </Grid>
+
+          <Grid item xs={2} alignItems="baseline">
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<Person style={{fontSize:30}} />}
+              aria-controls="simple-menu" 
+              aria-haspopup="true" 
+              onClick={handleOpenMenu}
+            >
+              User Service
+            </Button>
+            <Menu
+              id="simple-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleCloseMenu}
+            >
+              <MenuItem variant='outlined' onClick={handleLogout}>Log out</MenuItem>
+              <MenuItem variant='outlined' component={Link} to="/delete-account">Delete Account</MenuItem>
+              <MenuItem variant='outlined' component={Link} to="/change-password">Change Password</MenuItem>
+            </Menu>
+          </Grid>
+        </Grid>
+
+        <Grid container direction="column" className={styles.buttonGrid}>
+          <Grid>
+            <button className={styles.buttonEasy} onClick={handleEasyMatch}>Match - Easy</button>
+          </Grid>
+          <Grid>
+            <button className={styles.buttonMed} onClick={handleMediumMatch}>Match - Medium</button>
+          </Grid>
+          <Grid>
+            <button className={styles.buttonHard} onClick={handleHardMatch}>Match - Hard</button>
+          </Grid>
+        </Grid>
+  
+        <Dialog
+          open={isDialogOpen}
+          onClose={closeDialog}
+        >
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{dialogMsg}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeDialog}>Close</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
 }
 
 export default MatchPage;

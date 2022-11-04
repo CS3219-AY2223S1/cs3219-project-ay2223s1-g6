@@ -1,0 +1,52 @@
+.bg {
+    background-image: linear-gradient(45deg, white, #fffde7);
+}
+
+.buttonGrid {
+    margin-top: 10%;
+}
+
+.buttonEasy {
+    background-image: linear-gradient(45deg, #fff59d, #ffee58);
+    color: black;
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 20px;
+    border-style: hidden;
+    border-radius: 3px;
+    height: 80px;
+    width: 40%;
+    margin: 15px 30% 15px 30%;
+    min-width: 300px;
+    padding: 0 30px;
+}
+
+.buttonMed {
+    background-image: linear-gradient(45deg, #ffee58, #fdd835);
+    color: black;
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 20px;
+    border-style: hidden;
+    border-radius: 3px;
+    height: 80px;
+    width: 40%;
+    margin: 15px 30% 15px 30%;
+    min-width: 300px;
+    padding: 0 30px;
+}
+
+.buttonHard {
+    background-image: linear-gradient(45deg, #fdd835, #f9a825);
+    color: black;
+    text-align: center;
+    text-transform: capitalize;
+    font-size: 20px;
+    border-style: hidden;
+    border-radius: 3px;
+    height: 80px;
+    width: 40%;
+    margin: 15px 30% 15px 30%;
+    min-width: 300px;
+    padding: 0 30px;
+}
