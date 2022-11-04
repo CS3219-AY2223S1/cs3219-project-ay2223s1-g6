@@ -1,4 +1,4 @@
-import styles from './MatchPage.module.css';
+import { Person } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -8,21 +8,22 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid, 
-  Menu, 
-  MenuItem,  
+  Grid,
+  Menu,
+  MenuItem,
   Typography,
 } from '@mui/material';
-import { Person } from '@mui/icons-material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
 import { MATCHING_SVC_SOCKETIO_PATH, URL_MATCHING_SVC_MATCH_NAMESPACE, URL_USER_SVC } from '../../configs';
 import { STATUS_CODE_SUCCESS } from '../../constants';
 import { AuthContext } from '../contexts/AuthContext';
 import { SessionContext } from '../contexts/SessionContext';
+import styles from './MatchPage.module.css';
 
 const DURATION = 30;
 
@@ -69,10 +70,15 @@ function MatchPage() {
       });
     });
 
-    socket.on('match failure', (resp) => {
+    socket.on('match failure', (msg) => {
       closeTimer();
+      if (msg.status === 403 || msg.status === 400) {
+        toast.error('An error occurred. You may not have the permission to perform this action.');
+        authContext.setLoggedIn(false);
+        navigate('/login');
+      }
       setDialogTitle('Match');
-      setDialogMsg(resp.message);
+      setDialogMsg(msg.message);
       setIsDialogOpen(true);
     });
 
@@ -89,7 +95,7 @@ function MatchPage() {
       // must ensure useEffect is only executed once at the start!
       socket.disconnect();
     };
-  }, [navigate, sessionContext, socket]);
+  }, [navigate, authContext, sessionContext, socket]);
 
   const handleLogout = async () => {
     handleCloseMenu();
