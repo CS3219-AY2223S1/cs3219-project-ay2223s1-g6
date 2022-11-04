@@ -216,13 +216,14 @@ function MatchPage() {
 
         <Grid container direction="column" className={styles.buttonGrid}>
           <Grid>
-            <button className={styles.buttonEasy} onClick={handleEasyMatch}>Match - Easy</button>
+            <button className={`${styles.button} ${styles.buttonEasy}`} onClick={handleEasyMatch}>Match - Easy</button>
           </Grid>
           <Grid>
-            <button className={styles.buttonMed} onClick={handleMediumMatch}>Match - Medium</button>
+            <button className={`${styles.button} ${styles.buttonMed}`} onClick={handleMediumMatch}>Match - Medium
+            </button>
           </Grid>
           <Grid>
-            <button className={styles.buttonHard} onClick={handleHardMatch}>Match - Hard</button>
+            <button className={`${styles.button} ${styles.buttonHard}`} onClick={handleHardMatch}>Match - Hard</button>
           </Grid>
         </Grid>
 
