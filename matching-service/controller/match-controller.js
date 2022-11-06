@@ -15,7 +15,6 @@ const USER_SRV_PREFIX = process.env.USER_SERVICE_PREFIX
 const GATEWAY_HOST = process.env.API_GATEWAY_HOST
 const GATEWAY_PORT = process.env.API_GATEWAY_PORT
 
-
 async function authenticateUser(username, token) {
   // TODO: reference config file for user service url
   let authSuccess;

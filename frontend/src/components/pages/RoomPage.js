@@ -1,6 +1,7 @@
 import {
-  Box,
   Button,
+  Grid,
+  List,
   Paper,
   Table,
   TableBody,
@@ -8,6 +9,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from '@mui/material';
 import axios from 'axios';
@@ -17,24 +19,31 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { io } from 'socket.io-client';
 import {
-  URL_CHAT_SVC_DEFAULT_NAMESPACE,
-  URL_EDITOR_SVC_DEFAULT_NAMESPACE,
-  URL_MATCH_SVC_ROOM_NAMESPACE,
+  CHAT_SVC_SOCKETIO_PATH,
+  EDITOR_SVC_SOCKETIO_PATH,
+  MATCHING_SVC_SOCKETIO_PATH,
+  URL_CHAT_SVC,
+  URL_EDITOR_SVC,
+  URL_MATCHING_SVC_ROOM_NAMESPACE,
   URL_QUESTION_SVC,
 } from '../../configs';
 import { SessionContext } from '../contexts/SessionContext';
+import ReceivedMsg from '../elements/ReceivedMsg';
+import SentMsg from '../elements/SentMsg';
 
 function RoomPage() {
   const [question, setQuestion] = useState(null);
-  const [matchSocket] = useState(() => io(URL_MATCH_SVC_ROOM_NAMESPACE));
-  const [editorSocket] = useState(() => io(URL_EDITOR_SVC_DEFAULT_NAMESPACE));
-  const [chatSocket] = useState(() => io(URL_CHAT_SVC_DEFAULT_NAMESPACE));
+  const [content, setContent] = useState('');
+  const [chat, setChat] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+
+  const [matchSocket] = useState(() => io(URL_MATCHING_SVC_ROOM_NAMESPACE, { path: MATCHING_SVC_SOCKETIO_PATH }));
+  const [editorSocket] = useState(() => io(URL_EDITOR_SVC, { path: EDITOR_SVC_SOCKETIO_PATH }));
+  const [chatSocket] = useState(() => io(URL_CHAT_SVC, { path: CHAT_SVC_SOCKETIO_PATH }));
 
   const navigate = useNavigate();
   const location = useLocation();
   const sessionContext = useContext(SessionContext);
-
-  window.onbeforeunload = () => true;
 
   useEffect(() => {
     const questionId = location.state.questionId;
@@ -92,9 +101,9 @@ function RoomPage() {
     });
 
     editorSocket.on('new content', (msg) => {
-      // TODO: Overwrite editor content
-      // msg.data.newContent
-      // msg.data.sender
+      if (msg.data.sender !== Cookies.get('username')) {
+        setContent(msg.data.newContent);
+      }
     });
 
     editorSocket.emit('join room', {
@@ -110,15 +119,18 @@ function RoomPage() {
       handleFailure();
     });
 
-    editorSocket.on('message failure', (msg) => {
+    chatSocket.on('message failure', (msg) => {
       console.log(msg.message);
       handleFailure();
     });
 
-    editorSocket.on('new message', (msg) => {
-      // TODO: Add message to list
-      // msg.data.messageContent
-      // msg.data.sender
+    chatSocket.on('new message', (msg) => {
+      if (msg.data.sender !== Cookies.get('username')) {
+        setChat(prevChat => ([...prevChat, {
+          sender: msg.data.sender, 
+          chatMessage: msg.data.messageContent
+        }]));
+      }
     });
 
     chatSocket.emit('join room', {
@@ -138,8 +150,6 @@ function RoomPage() {
     });
 
     return () => {
-      window.onbeforeunload = () => {};
-
       console.log('Room page match socket disconnecting: ' + matchSocket.id);
       console.log('Room page editor socket disconnecting: ' + editorSocket.id);
       console.log('Room page chat socket disconnecting: ' + chatSocket.id);
@@ -157,38 +167,129 @@ function RoomPage() {
     });
   };
 
+  const handleContentChange = (event) => {
+    setContent(event.target.value);
+    editorSocket.emit('change', {
+      token: Cookies.get('auth'),
+      username: Cookies.get('username'),
+      newContent: event.target.value
+    });
+  }
+
+  const handleNewMessageChange = (event) => {
+    setNewMessage(event.target.value);
+  }
+
+  const handleSendMessage = () => {
+    if (newMessage === '') {
+      return;
+    }
+
+    chatSocket.emit('message', {
+      token: Cookies.get('auth'),
+      username: Cookies.get('username'),
+      message: newMessage
+    })
+    setChat(prevChat => ([...prevChat, {
+      sender: Cookies.get('username'), 
+      chatMessage: newMessage
+    }]));
+    setNewMessage('');
+  }
+
   // TODO: Should handle loading and loading question fail
   if (!question) return <></>;
 
   return (
-    <Box display={'flex'} flexDirection={'column'}>
-      <Typography variant={'h3'} marginBottom={'2rem'}>This is your room</Typography>
-      <Box display={'flex'} flexDirection={'row'}>
-        <Button color={'warning'} variant={'contained'} onClick={handleLeaveRoom}>End session</Button>
-      </Box>
-      <Typography variant={'h4'} marginBottom={'2rem'}>{question.title}</Typography>
-      <Typography variant={'h5'} marginBottom={'2rem'}>{question.description}</Typography>
-      <TableContainer component={Paper}>
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Input</TableCell>
-              <TableCell>Output</TableCell>
-              <TableCell>Explanation</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {question.examples.map((example) => (
-              <TableRow key={example._id}>
-                <TableCell>{example.example_input}</TableCell>
-                <TableCell>{example.example_output}</TableCell>
-                <TableCell>{example.example_explanation}</TableCell>
+    <Grid>
+
+      <Grid container spacing={3} marginBottom={'2rem'} alignItems="baseline">
+        <Grid item xs={10}>
+          <Typography variant={'h3'}>This is your room</Typography>
+        </Grid>
+
+        <Grid item xs={2}>
+          <Button 
+            color='warning'
+            variant='contained'
+            fullWidth
+            onClick={handleLeaveRoom}
+          >
+            End Session
+          </Button>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={12} marginBottom={'2rem'}>
+        <Typography variant={'h4'} marginBottom={'1rem'}>{question.title}</Typography>
+        <Typography variant={'h5'} marginBottom={'1rem'}>{question.description}</Typography>
+        <TableContainer component={Paper}>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Input</TableCell>
+                <TableCell>Output</TableCell>
+                <TableCell>Explanation</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+            </TableHead>
+            <TableBody>
+              {question.examples.map((example) => (
+                <TableRow key={example._id}>
+                  <TableCell>{example.example_input}</TableCell>
+                  <TableCell>{example.example_output}</TableCell>
+                  <TableCell>{example.example_explanation}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
+      
+      <Grid item xs={12} marginBottom={'2rem'}>
+        <TextField
+          id="collaboration"
+          marginTop={'2rem'}
+          multiline
+          fullWidth
+          minRows={10}
+          maxRows={50}
+          placeholder="Type your answers and work with your friend here ..."
+          value={content}
+          onChange={handleContentChange}
+        />
+      </Grid>
+      
+      <Grid item xs={12} marginBottom={'2rem'}>
+        <Typography variant={'h5'}>Chat History</Typography>
+        <List>
+          {
+            chat.map((msgInfo) => (
+              msgInfo.sender === Cookies.get('username')
+              ? <SentMsg sender={msgInfo.sender} message={msgInfo.chatMessage} />
+              : <ReceivedMsg sender={msgInfo.sender} message={msgInfo.chatMessage} />
+            ))
+          }
+        </List>
+      </Grid>
+
+      <Grid container spacing={3}>
+        <Grid item xs={10}>
+          <TextField
+            id="new chat message"
+            multiline
+            fullWidth
+            maxRows={4}
+            placeholder="Send a message here ..."
+            value={newMessage}
+            onChange={handleNewMessageChange}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <Button variant="outlined" fullWidth onClick={handleSendMessage}>Send</Button>
+        </Grid>
+      </Grid>
+      
+    </Grid>
   );
 }
 

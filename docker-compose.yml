@@ -70,19 +70,19 @@ services:
         networks:
             - pp-g6
     collaboration-service:
-        container_name: ${COLLABORATION_SERVICE_HOST}
+        container_name: ${EDITOR_SERVICE_HOST}
         build:
             context: ./editor-service
         ports:
-            - "${COLLABORATION_SERVICE_PORT}:${COLLABORATION_SERVICE_PORT}"
+            - "${EDITOR_SERVICE_PORT}:${EDITOR_SERVICE_PORT}"
         networks:
             - pp-g6
     communication-service:
-        container_name: ${COMMUNICATION_SERVICE_HOST}
+        container_name: ${CHAT_SERVICE_HOST}
         build:
             context: ./chat-service
         ports:
-            - "${COMMUNICATION_SERVICE_PORT}:${COMMUNICATION_SERVICE_PORT}"
+            - "${CHAT_SERVICE_PORT}:${CHAT_SERVICE_PORT}"
         networks:
             - pp-g6
     api-gateway:
