@@ -2,7 +2,7 @@ import { Box, LinearProgress } from '@mui/material';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { createContext, useEffect, useState } from 'react';
-
+import { URL_USER_SVC } from '../../configs';
 export const AuthContext = createContext(null);
 
 const checkLoggedIn = async () => {
@@ -23,9 +23,8 @@ async function authenticateUser(username, token) {
     return false;
   }
 
-  // TODO: reference config file for user service url
   let authSuccess;
-  await axios.get('http://localhost:8000/api/user/authentication', {
+  await axios.get(`${URL_USER_SVC}/authentication`, {
     params: {
       username: username,
       auth: token,
