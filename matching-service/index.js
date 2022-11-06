@@ -38,22 +38,23 @@ const io = new Server(server, {
   path: process.env.MATCHING_SERVICE_SOCKETIO_PATH,
 });  // TODO: export does not seem to be the best practice
 
-io.on('connection', (socket) => {
-  console.log('a user connected to /api/match, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
+io.of(process.env.MATCHING_SERVICE_SOCKETIO_MATCH_NAMESPACE)
+  .on('connection', (socket) => {
+    console.log('a user connected to /api/match, socket id: ' + socket.id); // ojIckSD2jqNzOqIrAGzL
 
-  socket.on('new match', (data) => {
-    console.log('new match');
-    // emitted when user clicks a button to start looking for a new match
-    handleNewMatch(data, socket);
-  });
+    socket.on('new match', (data) => {
+      console.log('new match');
+      // emitted when user clicks a button to start looking for a new match
+      handleNewMatch(data, socket);
+    });
 
-  socket.on('disconnect', () => {
-    // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
-    console.log('a user disconnected from /api/match, socket id: ' + socket.id);
-    console.log(socket.rooms);  // empty set because socket has already left all rooms
-    handleMatchDisconnect(socket);
+    socket.on('disconnect', () => {
+      // emitted when client calls socket.disconnect() at the end (after session ends and socket is no longer used)
+      console.log('a user disconnected from /api/match, socket id: ' + socket.id);
+      console.log(socket.rooms);  // empty set because socket has already left all rooms
+      handleMatchDisconnect(socket);
+    });
   });
-});
 
 io.of(process.env.MATCHING_SERVICE_SOCKETIO_ROOM_NAMESPACE)
   .on('connection', (socket) => {
