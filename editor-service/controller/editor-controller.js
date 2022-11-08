@@ -1,15 +1,13 @@
 import axios from 'axios';
 import { joinRoom, newChange } from '../service/editor-service.js';
-
-import * as dotenv from 'dotenv'
-import * as dotenvExpand from 'dotenv-expand'
-dotenvExpand.expand(dotenv.config())
-const USER_SRV_PREFIX = process.env.USER_SERVICE_PREFIX
-const GATEWAY_HOST = process.env.API_GATEWAY_HOST
-const GATEWAY_PORT = process.env.API_GATEWAY_PORT
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand';
+dotenvExpand.expand(dotenv.config());
+const USER_SRV_PREFIX = process.env.USER_SERVICE_PREFIX;
+const GATEWAY_HOST = process.env.API_GATEWAY_HOST;
+const GATEWAY_PORT = process.env.API_GATEWAY_PORT;
 
 async function authenticateUser(username, token) {
-  // TODO: reference config file for user service url
   let authSuccess;
   await axios.get(`http://${GATEWAY_HOST}:${GATEWAY_PORT}${USER_SRV_PREFIX}/authentication`, {
     params: {
