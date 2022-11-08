@@ -11,12 +11,9 @@ import {
   getRoomBySocketId,
   getRoomByUsername,
   updateRoom,
-} from './repository.js';
+} from '../model/repository.js';
 
-import * as dotenv from 'dotenv'
-import * as dotenvExpand from 'dotenv-expand'
-dotenvExpand.expand(dotenv.config())
-// TODO: Change to use variable expansion
+// TODO: Change to use variable expansion 
 const QUESTION_SRV_HOST = process.env.QUESTION_SERVICE_HOST;
 const QUESTION_SRV_PORT = process.env.QUESTION_SERVICE_PORT;
 const QUESTION_SRV_PREFIX = process.env.QUESTION_SERVICE_PREFIX;
