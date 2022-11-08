@@ -14,19 +14,14 @@ client.on('connect', (stream) => console.log('Redis connected.'))
 
 await client.connect()
 
-export async function createEntry(key, val, ttl) {
-    console.log('creating entry in redis')
-    return await client.multi().set(key, val).expire(key, ttl).exec()
+export function createEntry(key, val, ttl) {
+    client.multi().set(key, val).expire(key, ttl).exec()
 }
 
-export async function getEntry(key) {
-    return await client.get(key)
+export function refreshEntry(key, ttl) {
+    client.expire(key, ttl)
 }
 
-export async function refreshEntry(key, ttl) {
-    return await client.expire(key, ttl)
-}
-
-export async function deleteEntry(key) {
-    return await client.del(key)
+export function deleteEntry(key) {
+    client.del(key)
 }
