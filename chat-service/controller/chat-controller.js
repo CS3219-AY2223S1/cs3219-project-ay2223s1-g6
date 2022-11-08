@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { joinRoom, newMessage } from '../service/chat-service.js';
+import { joinRoom, newMessage } from '../model/chat-service.js';
 
 import * as dotenv from 'dotenv'
 import * as dotenvExpand from 'dotenv-expand'

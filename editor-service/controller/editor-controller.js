@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { joinRoom, newChange } from '../service/editor-service.js';
+import { joinRoom, newChange } from '../model/editor-service.js';
 
 import * as dotenv from 'dotenv'
 import * as dotenvExpand from 'dotenv-expand'
