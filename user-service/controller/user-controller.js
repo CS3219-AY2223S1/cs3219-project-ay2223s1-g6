@@ -79,8 +79,10 @@ export async function changePassword(req, res) {
 
 
 export async function userLogin(req, res) {
+    console.log(`Received user log in request.`);
     try {
         const { username, password } = req.body;
+        console.log(username + ' ' + password)
         if (username && password) {
             const resp = await _userLogin(username, password);
             if (resp.OK) {
@@ -90,13 +92,16 @@ export async function userLogin(req, res) {
                 //return res.redirect('/api/matching')
                 return res.status(201).json({ message: `User ${username} logged in successfully!` });
             } else {
+                // TODO: should return correct status code, e.g., wrong username/password is not bad request
+                console.log('Login failed due to server error.')
                 return res.status(400).json({ message: `Login failed for user ${username}!` });
             }
         } else {
             console.log('Username and/or new password missing.');
-            return;
+            return res.status(400).json({ message: `Username and/or new password missing.` });;
         }
     } catch (err) {
+        console.log('Login failed due to server error.')
         return res.status(500).json({ message: `Failed to login!` });
     }
 }
@@ -118,6 +123,7 @@ export async function userLogout(req, res) {
             }
         } else {
             console.log('Username missing.');
+            // TODO: should return an error
             return;
         }
 
@@ -130,6 +136,7 @@ export async function userAuthentication(req, res) {
     try {
         const username = req.query.username
         const token = req.query.auth
+        console.log(`Authentication user: ${username}`)
         if (username) {
             console.log('Received token:', token)
             const resp = await _authenticate(username, token);

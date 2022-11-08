@@ -53,6 +53,7 @@ export async function changePassword(username, newPassword, token) {
 
 export async function login(username, password) {
     const hashed = await ormRetreivePassword(username)
+    console.log('password retreived')
     if (verifyPassword(password, hashed) === false) {
         return { OK:false, token:'' }
     }
@@ -61,6 +62,7 @@ export async function login(username, password) {
 }
 
 export async function logout(username, token) {
+    // TODO: Logout does not need to validate token, a user can log out even if he's not logged in
     const status = await validateToken(username, token)
     if (status === false) {
         return {OK:false, message:'Invalid token'}

@@ -1,12 +1,13 @@
 import Questions from './question-model.js';
 
-import 'dotenv/config'
-
 //Set up mongoose connection
 import mongoose from 'mongoose';
-import * as Console from "console";
+import * as dotenv from 'dotenv'
+import * as dotenvExpand from 'dotenv-expand'
+dotenvExpand.expand(dotenv.config())
+const MONGO_URI = process.env.QUESTION_SERVICE_MONGO_URI_CLOUD
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/questionBank', { useNewUrlParser: true});
+mongoose.connect(MONGO_URI, { useNewUrlParser: true});
 
 var db = mongoose.connection;
 
