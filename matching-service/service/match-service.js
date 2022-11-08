@@ -13,7 +13,9 @@ import {
   updateRoom,
 } from '../model/repository.js';
 
-// TODO: Change to use variable expansion 
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand';
+dotenvExpand.expand(dotenv.config());
 const QUESTION_SRV_HOST = process.env.QUESTION_SERVICE_HOST;
 const QUESTION_SRV_PORT = process.env.QUESTION_SERVICE_PORT;
 const QUESTION_SRV_PREFIX = process.env.QUESTION_SERVICE_PREFIX;
