@@ -13,10 +13,10 @@
    >
    > 
    >
-   > Note: `QUESTION_SERVICE_MONGO_URI_CLOUD` is the URI to the cloud database for question bank is provided by default as it contains prepared question for the question service. Please do not edit that URI.
+   > Note: `QUESTION_SERVICE_MONGO_URI_CLOUD` is the URI to the cloud database for question bank which is provided by default as it contains prepared question for the question service. Please do not edit this URI.
 
-3. Run `./startup.sh` and you should see the `.env` file being copied to all backend service folders. **If your computer does not support shell script execution, you can manually copy the `.env` files into *user-service*, *matching-service*, *question-service*, *editor-service* and *chat-service* folders.**
+3. Run `./startup.sh` and you should see the `.env` file being copied to all backend service folders. **If your computer does not support shell script execution, you can manually copy the `.env` file into *user-service*, *matching-service*, *question-service*, *editor-service* and *chat-service* folders.**
 
 4. Run `docker-compose --env-file ./.env up --build`
 
-5. Wait until all containers are compiled and running, visit `localhost:3000` . (The frontend usually take the longest to compile, so you can wait for )
+5. Wait until all containers are compiled and running, visit `localhost:3000` . (The frontend usually take the longest to compile)
